@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "visual-keymap",
+    "version": "${version}",
+    "name": "Visual Keymap",
+    "description": "Visualize key bindings from all mods.",
+    "authors": [],
+    "contact": {},
+    "license": "GPL-3.0",
+    "icon": "assets/visualkeymap/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            "dev.xef2.visualkeymap.VisualKeymap"
+        ],
+        "modmenu": [
+            "dev.xef2.visualkeymap.compact.modmenu.ModMenuImpl"
+        ]
+    },
+    "mixins": [
+        "visual-keymap.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${loader_version}",
+        "fabric": "*",
+        "minecraft": "${minecraft_version}"
+    },
+    "suggests": {
+        "malilib": ">=0.26.4 <0.27.0",
+        "commandkeys": ">=2.3.14 <2.4.0"
+    }
+}
