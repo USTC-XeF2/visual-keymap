@@ -4,8 +4,12 @@
     "version": "${version}",
     "name": "Visual Keymap",
     "description": "Visualize key bindings from all mods.",
-    "authors": [],
-    "contact": {},
+    "authors": ["XeF2"],
+    "contact": {
+        "homepage": "https://modrinth.com/mod/visual-keymap",
+        "sources": "https://github.com/USTC-XeF2/visual-keymap",
+        "issues": "https://github.com/USTC-XeF2/visual-keymap/issues"
+    },
     "license": "GPL-3.0",
     "icon": "assets/visualkeymap/icon.png",
     "environment": "client",
