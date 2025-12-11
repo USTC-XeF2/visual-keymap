@@ -2,7 +2,7 @@
 
 English | [简体中文](docs/README.zh-CN.md)
 
-![screenshot.png](docs/screenshot.png)
+![Screenshot of Visual Keymap Screen](docs/screenshot.png)
 
 This mod allows you to visually view the currently bound key positions in the game through keyboard layout, and change the key position bindings from various mods in a unified configuration page.
 

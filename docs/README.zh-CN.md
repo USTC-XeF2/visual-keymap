@@ -2,7 +2,7 @@
 
 [English](../README.md) | 简体中文
 
-![screenshot-zh-CN.png](screenshot-zh-CN.png)
+![可视化键位图界面的屏幕截图](screenshot-zh-CN.png)
 
 本 Mod 允许你在游戏中以键盘布局可视化查看当前绑定的键位，并且在统一的配置页面中更改来自各个 Mod 的键位绑定。
 
