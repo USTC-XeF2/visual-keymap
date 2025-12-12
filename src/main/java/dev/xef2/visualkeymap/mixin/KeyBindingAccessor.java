@@ -10,4 +10,7 @@ public interface KeyBindingAccessor {
 
     @Accessor("boundKey")
     InputUtil.Key getBoundKey();
+
+    @Accessor("field_63464")
+    int getOrder();
 }

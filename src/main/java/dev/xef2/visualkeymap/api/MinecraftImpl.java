@@ -4,6 +4,7 @@ import dev.xef2.visualkeymap.mixin.KeyBindingAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 
@@ -36,6 +37,20 @@ public class MinecraftImpl implements VisualKeymapApi<MinecraftImpl.MinecraftKey
         public List<Integer> getKeyCodes() {
             InputUtil.Key boundKey = ((KeyBindingAccessor) this.binding).getBoundKey();
             return boundKey.equals(InputUtil.UNKNOWN_KEY) ? List.of() : List.of(boundKey.getCode());
+        }
+
+        @Override
+        public List<Integer> getModifierKeyCodes() {
+            GameOptions options = MinecraftClient.getInstance().options;
+            if (Arrays.stream(options.debugKeys).anyMatch(binding -> binding == this.binding)) {
+                return List.of(((KeyBindingAccessor) options.debugModifierKey).getBoundKey().getCode());
+            }
+            return super.getModifierKeyCodes();
+        }
+
+        @Override
+        public int getOrder() {
+            return ((KeyBindingAccessor) this.binding).getOrder();
         }
 
         @Override
