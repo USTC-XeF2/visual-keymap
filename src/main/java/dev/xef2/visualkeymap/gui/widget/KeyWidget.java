@@ -17,9 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
@@ -37,6 +35,9 @@ public class KeyWidget extends PressableWidget {
     private final Supplier<List<? extends KeyBinding>> bindingSupplier;
     private final Runnable keySelector;
 
+    private List<? extends KeyBinding> bindings;
+    private List<List<KeyBinding>> conflictBindings;
+
     public KeyWidget(InputUtil.Key key, Text text, VisualKeymapScreen.SharedData sharedData,
                      Supplier<List<? extends KeyBinding>> bindingSupplier,
                      Runnable keySelector) {
@@ -46,22 +47,24 @@ public class KeyWidget extends PressableWidget {
         this.bindingSupplier = bindingSupplier;
         this.keySelector = keySelector;
 
-        setupTooltip();
+        updateBindings();
     }
 
-    public void setupTooltip() {
+    public void updateBindings() {
+        this.bindings = this.bindingSupplier.get();
+        this.conflictBindings = KeyBinding.getConflictBindings(this.bindings);
+
         MutableText tooltipText = Text.empty();
         tooltipText.append(this.key.getLocalizedText().copy().formatted(Formatting.BOLD, Formatting.GOLD));
 
-        List<? extends KeyBinding> bindings = this.bindingSupplier.get();
-        for (int i = 0; i < bindings.size(); i++) {
+        for (int i = 0; i < this.bindings.size(); i++) {
             tooltipText.append(Text.literal("\n"));
             if (i < MAX_DISPLAYED_BINDINGS) {
-                tooltipText.append(bindings.get(i).getDisplayName());
+                tooltipText.append(this.bindings.get(i).getDisplayName());
             } else {
                 tooltipText.append(Text.translatable(
                         VisualKeymap.getTranslationKey("gui.bindings_more"),
-                        bindings.size() - MAX_DISPLAYED_BINDINGS
+                        this.bindings.size() - MAX_DISPLAYED_BINDINGS
                 ).formatted(Formatting.ITALIC, Formatting.GRAY));
                 break;
             }
@@ -80,35 +83,18 @@ public class KeyWidget extends PressableWidget {
         this.appendDefaultNarrations(builder);
     }
 
-    private static boolean hasConflict(List<? extends KeyBinding> bindings) {
-        Set<List<Integer>> uniqueKeyCodes = new HashSet<>();
-
-        for (KeyBinding binding : bindings) {
-            List<Integer> keyCodes = binding.getKeyCodes();
-
-            if (!uniqueKeyCodes.add(keyCodes)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         // 1. 获取绑定并确定颜色
-        List<? extends KeyBinding> bindings = this.bindingSupplier.get();
-        int bindCount = bindings.size();
+        int bindCount = this.bindings.size();
 
         int color;
-        if (bindCount == 1) {
+        if (!this.conflictBindings.isEmpty()) {
+            color = KEY_MULTI_CONFLICT_COLOR;
+        } else if (bindCount == 1) {
             color = KEY_SINGLE_BOUNDED_COLOR;
         } else if (bindCount >= 2) {
-            if (hasConflict(bindings)) {
-                color = KEY_MULTI_CONFLICT_COLOR;
-            } else {
-                color = KEY_MULTI_UNIQUE_COLOR;
-            }
+            color = KEY_MULTI_UNIQUE_COLOR;
         } else {
             color = KEY_BACKGROUND_COLOR;
         }

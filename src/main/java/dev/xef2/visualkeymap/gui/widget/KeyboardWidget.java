@@ -54,7 +54,7 @@ public class KeyboardWidget extends WrapperWidget {
     }
 
     public void updateKeyBindings() {
-        this.keyWidgetMap.values().forEach(KeyWidget::setupTooltip);
+        this.keyWidgetMap.values().forEach(KeyWidget::updateBindings);
     }
 
     public void setSize(int width, int maxHeight) {

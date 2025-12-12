@@ -64,7 +64,7 @@ public class VisualKeymapScreen extends GameOptionsScreen {
 
     private List<? extends KeyBinding> getBindingsForKey(InputUtil.Key key) {
         return this.keyBindings.stream()
-                .filter(binding -> binding.getKeyCodes().contains(key.getCode()))
+                .filter(binding -> binding.getFullKeyCodes().contains(key.getCode()))
                 .toList();
     }
 
