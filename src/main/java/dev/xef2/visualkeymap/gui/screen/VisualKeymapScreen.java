@@ -92,12 +92,13 @@ public class VisualKeymapScreen extends GameOptionsScreen {
         super.refreshWidgetPositions();
     }
 
-    private void setKeyBinding(boolean escape) {
+    private void setKeyBinding(boolean ended) {
         this.sharedData.selectedKeyBinding.setBoundKeys(this.pressedKeys);
-        if (escape || this.pressedKeys.size() == this.sharedData.selectedKeyBinding.getMaxBoundKeys()) {
+        if (ended || this.pressedKeys.size() == this.sharedData.selectedKeyBinding.getMaxBoundKeys()) {
             this.sharedData.selectedKeyBinding = null;
             this.pressedKeys.clear();
         }
+        this.keyboardWidget.updateKeyBindings();
         this.keybindsListWidget.updateAllEntries();
     }
 
