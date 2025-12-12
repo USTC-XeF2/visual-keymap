@@ -56,11 +56,12 @@ public class KeyLayoutHelper {
         keys.add(new KeyLayout("right.shift", 4.0, 12.25, 2.75));
 
         keys.add(new KeyLayout("left.control", 5.0, 0.0, 1.25));
-        keys.add(new KeyLayout("left.win", 5.0, 2.25));
-        keys.add(new KeyLayout("left.alt", 5.0, 3.25, 1.25));
-        keys.add(new KeyLayout("space", 5.0, 4.5, 6.25));
-        keys.add(new KeyLayout("right.alt", 5.0, 10.75, 1.25));
-        keys.add(new KeyLayout("menu", 5.0, 12.0, 1.25));
+        keys.add(new KeyLayout("left.win", 5.0, 1.25, 1.25));
+        keys.add(new KeyLayout("left.alt", 5.0, 2.5, 1.25));
+        keys.add(new KeyLayout("space", 5.0, 3.75, 6.25));
+        keys.add(new KeyLayout("right.alt", 5.0, 10, 1.25));
+        keys.add(new KeyLayout("right.win", 5.0, 11.25, 1.25));
+        keys.add(new KeyLayout("menu", 5.0, 12.5, 1.25));
         keys.add(new KeyLayout("right.control", 5.0, 13.75, 1.25));
 
         keys.add(new KeyLayout("print.screen", 0.0, 15.0));
