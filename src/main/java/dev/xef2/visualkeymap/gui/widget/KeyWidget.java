@@ -5,7 +5,6 @@ import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.gui.screen.VisualKeymapScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -95,7 +94,7 @@ public class KeyWidget extends PressableWidget {
     }
 
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void drawIcon(DrawContext context, int mouseX, int mouseY, float delta) {
         // 1. 获取绑定并确定颜色
         List<? extends KeyBinding> bindings = this.bindingSupplier.get();
         int bindCount = bindings.size();
@@ -127,6 +126,6 @@ public class KeyWidget extends PressableWidget {
         context.fill(innerX, innerY, innerX + innerWidth, innerY + innerHeight, color);
 
         // 4. 绘制按键文本
-        this.drawMessage(context, MinecraftClient.getInstance().textRenderer, Colors.WHITE);
+        this.drawLabel(context.getHoverListener(this, DrawContext.HoverType.NONE));
     }
 }
