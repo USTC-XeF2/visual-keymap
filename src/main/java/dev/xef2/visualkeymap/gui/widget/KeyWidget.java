@@ -49,24 +49,24 @@ public class KeyWidget extends PressableWidget {
     }
 
     public void setupTooltip() {
+        MutableText tooltipText = Text.empty();
+        tooltipText.append(this.key.getLocalizedText().copy().formatted(Formatting.BOLD, Formatting.GOLD));
+
         List<? extends KeyBinding> bindings = this.bindingSupplier.get();
-        if (!bindings.isEmpty()) {
-            MutableText tooltipText = Text.empty();
-            tooltipText.append(Text.translatable(VisualKeymap.getTranslationKey("gui.bindings_title")).formatted(Formatting.BOLD, Formatting.GOLD));
-            for (int i = 0; i < bindings.size(); i++) {
-                tooltipText.append(Text.literal("\n"));
-                if (i < MAX_DISPLAYED_BINDINGS) {
-                    tooltipText.append(bindings.get(i).getDisplayName());
-                } else {
-                    tooltipText.append(Text.translatable(
-                            VisualKeymap.getTranslationKey("gui.bindings_more"),
-                            bindings.size() - MAX_DISPLAYED_BINDINGS
-                    ).formatted(Formatting.ITALIC, Formatting.GRAY));
-                    break;
-                }
+        for (int i = 0; i < bindings.size(); i++) {
+            tooltipText.append(Text.literal("\n"));
+            if (i < MAX_DISPLAYED_BINDINGS) {
+                tooltipText.append(bindings.get(i).getDisplayName());
+            } else {
+                tooltipText.append(Text.translatable(
+                        VisualKeymap.getTranslationKey("gui.bindings_more"),
+                        bindings.size() - MAX_DISPLAYED_BINDINGS
+                ).formatted(Formatting.ITALIC, Formatting.GRAY));
+                break;
             }
-            this.setTooltip(Tooltip.of(tooltipText));
         }
+
+        this.setTooltip(Tooltip.of(tooltipText));
     }
 
     @Override
