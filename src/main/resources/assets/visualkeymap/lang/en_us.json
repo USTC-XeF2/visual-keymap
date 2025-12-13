@@ -1,8 +1,9 @@
 {
     "visualkeymap.gui.open_keymap": "Visual Keymap...",
     "visualkeymap.gui.title": "Visual Keymap",
-    "visualkeymap.gui.bindings_title": "Bound Keys",
     "visualkeymap.gui.bindings_more": "and %s more...",
+    "visualkeymap.gui.conflict_title": "Conflict Bindings",
+
     "visualkeymap.key.left.alt": "Alt",
     "visualkeymap.key.left.control": "Ctrl",
     "visualkeymap.key.left.shift": "Shift",

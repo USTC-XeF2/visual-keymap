@@ -13,6 +13,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -25,6 +26,8 @@ public class KeybindsListWidget extends ElementListWidget<KeybindsListWidget.Ent
 
     private final VisualKeymapScreen.SharedData sharedData;
     private final Consumer<KeyBinding> resetCallback;
+
+    private List<? extends KeyBinding> keyBindings;
 
     public KeybindsListWidget(
             MinecraftClient client,
@@ -40,11 +43,15 @@ public class KeybindsListWidget extends ElementListWidget<KeybindsListWidget.Ent
     }
 
     public void setKeyBindings(List<? extends KeyBinding> keyBindings) {
+        this.keyBindings = keyBindings;
+
         this.clearEntries();
         for (KeyBinding keyBinding : keyBindings) {
             this.addEntry(new Entry(keyBinding));
         }
         this.setScrollY(0.0);
+
+        this.updateAllEntries();
     }
 
     @Override
@@ -53,7 +60,8 @@ public class KeybindsListWidget extends ElementListWidget<KeybindsListWidget.Ent
     }
 
     public void updateAllEntries() {
-        this.children().forEach(Entry::update);
+        List<List<KeyBinding>> conflictKeyBindings = KeyBinding.getConflictBindings(this.keyBindings);
+        this.children().forEach(entry -> entry.update(conflictKeyBindings));
     }
 
     @Environment(EnvType.CLIENT)
@@ -88,8 +96,6 @@ public class KeybindsListWidget extends ElementListWidget<KeybindsListWidget.Ent
                     })
                     .dimensions(0, 0, 50, ROW_HEIGHT)
                     .build();
-
-            this.update();
         }
 
         @Override
@@ -102,11 +108,6 @@ public class KeybindsListWidget extends ElementListWidget<KeybindsListWidget.Ent
 
             int editX = resetX - 5 - this.editButton.getWidth();
             this.editButton.setPosition(editX, y);
-            if (sharedData.selectedKeyBinding == this.binding) {
-                this.editButton.setMessage(Text.literal("> ")
-                        .append(this.binding.getBoundKeysLocalizedText()).append(" <")
-                        .formatted(Formatting.YELLOW));
-            }
             this.editButton.render(context, mouseX, mouseY, deltaTicks);
 
             int textX = this.getContentX();
@@ -125,8 +126,39 @@ public class KeybindsListWidget extends ElementListWidget<KeybindsListWidget.Ent
             return List.of(this.editButton, this.resetButton);
         }
 
-        protected void update() {
-            this.editButton.setMessage(this.binding.getBoundKeysLocalizedText());
+        protected void update(List<List<KeyBinding>> conflictKeyBindings) {
+            List<KeyBinding> conflictedBindings = this.binding.getKeyCodes().isEmpty() ? null : conflictKeyBindings
+                    .stream()
+                    .filter(list -> list.contains(this.binding))
+                    .findFirst()
+                    .orElse(null);
+
+            if (conflictedBindings != null) {
+                MutableText tooltipText = Text.empty();
+                tooltipText.append(Text.translatable("visualkeymap.gui.conflict_title")
+                        .formatted(Formatting.BOLD, Formatting.GOLD));
+                for (KeyBinding binding : conflictedBindings) {
+                    if (binding != this.binding) {
+                        tooltipText.append(Text.literal("\n"))
+                                .append(binding.getDisplayName());
+                    }
+                }
+                this.editButton.setTooltip(Tooltip.of(tooltipText));
+            } else {
+                this.editButton.setTooltip(null);
+            }
+
+            MutableText keyText = this.binding.getBoundKeysLocalizedText().copy();
+            if (sharedData.selectedKeyBinding == this.binding) {
+                this.editButton.setMessage(Text.literal("> ")
+                        .append(keyText.formatted(Formatting.WHITE)).append(" <")
+                        .formatted(Formatting.YELLOW));
+            } else if (conflictedBindings != null) {
+                this.editButton.setMessage(keyText.formatted(Formatting.GOLD));
+            } else {
+                this.editButton.setMessage(keyText);
+            }
+
             this.resetButton.active = !this.binding.isDefault();
         }
     }
