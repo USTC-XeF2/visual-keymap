@@ -1,8 +1,9 @@
 {
     "visualkeymap.gui.open_keymap": "可视化键位图...",
     "visualkeymap.gui.title": "可视化键位图",
-    "visualkeymap.gui.bindings_title": "已绑定的按键",
     "visualkeymap.gui.bindings_more": "还有 %s 个...",
+    "visualkeymap.gui.conflict_title": "冲突的按键绑定",
+
     "visualkeymap.key.left.alt": "Alt",
     "visualkeymap.key.left.control": "Ctrl",
     "visualkeymap.key.left.shift": "Shift",
