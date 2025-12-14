@@ -7,10 +7,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Environment(EnvType.CLIENT)
 public abstract class KeyBinding {
@@ -97,6 +95,23 @@ public abstract class KeyBinding {
             text.append(getLocalizedTextFromCode(keyCodes.get(i)));
         }
         return text;
+    }
+
+    protected List<String> getSearchableStrings() {
+        return Stream.concat(
+                Stream.of(this.category, this.name),
+                this.getFullKeyCodes().stream().map(KeyBinding::getLocalizedTextFromCode)
+        ).map(Text::getString).toList();
+    }
+
+    public final boolean containsSearchText(String searchText) {
+        List<String> searchTerms = Arrays.stream(searchText.toLowerCase().split(" "))
+                .filter(s -> !s.isBlank()).toList();
+        if (searchTerms.isEmpty()) {
+            return false;
+        }
+        String targetString = String.join(" ", this.getSearchableStrings()).toLowerCase();
+        return searchTerms.stream().allMatch(targetString::contains);
     }
 
     abstract public void setBoundKeys(List<InputUtil.Key> keys);

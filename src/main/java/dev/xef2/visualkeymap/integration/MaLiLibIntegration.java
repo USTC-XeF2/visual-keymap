@@ -12,6 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
@@ -34,36 +35,44 @@ public class MaLiLibIntegration implements VisualKeymapApi<MaLiLibIntegration.Ma
 
     public static class MaLiLibKeyBinding extends KeyBinding {
 
-        private final IKeybind keybind;
+        private final IHotkey hotkey;
 
         public MaLiLibKeyBinding(KeybindCategory category, IHotkey hotkey) {
             super(Text.of(category.getModName()), Text.of(hotkey.getConfigGuiDisplayName()), 4);
-            this.keybind = hotkey.getKeybind();
+            this.hotkey = hotkey;
         }
 
         @Override
         public List<Integer> getKeyCodes() {
-            return this.keybind.getKeys().stream()
+            return this.hotkey.getKeybind().getKeys().stream()
                     .map(key -> key < -1 ? key + 100 : key)
                     .toList();
         }
 
         @Override
+        protected List<String> getSearchableStrings() {
+            ArrayList<String> strings = new ArrayList<>(super.getSearchableStrings());
+            strings.add(this.hotkey.getName());
+            return strings;
+        }
+
+        @Override
         public void setBoundKeys(List<InputUtil.Key> keys) {
-            this.keybind.clearKeys();
+            IKeybind keybind = this.hotkey.getKeybind();
+            keybind.clearKeys();
             keys.stream().map(InputUtil.Key::getCode)
                     .map(code -> code >= 0 && code <= 7 ? code - 100 : code)
-                    .forEach(this.keybind::addKey);
+                    .forEach(keybind::addKey);
         }
 
         @Override
         public boolean isDefault() {
-            return this.keybind.getStringValue().equals(this.keybind.getDefaultStringValue());
+            return this.hotkey.getStringValue().equals(this.hotkey.getDefaultStringValue());
         }
 
         @Override
         public void resetToDefault() {
-            this.keybind.resetToDefault();
+            this.hotkey.resetToDefault();
         }
     }
 }

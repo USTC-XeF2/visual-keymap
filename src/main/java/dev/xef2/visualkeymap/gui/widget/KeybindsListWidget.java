@@ -17,6 +17,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -43,10 +44,26 @@ public class KeybindsListWidget extends ElementListWidget<KeybindsListWidget.Ent
     }
 
     public void setKeyBindings(List<? extends KeyBinding> keyBindings) {
-        this.keyBindings = keyBindings;
+        this.keyBindings = new ArrayList<>(keyBindings);
+        this.createEntries();
+    }
+
+    public void createEntries() {
+        List<? extends KeyBinding> sortedKeyBindings = this.keyBindings.stream()
+                .sorted((a, b) -> {
+                    boolean aContains = a.containsSearchText(sharedData.searchText);
+                    boolean bContains = b.containsSearchText(sharedData.searchText);
+                    if (aContains && !bContains) {
+                        return -1;
+                    } else if (!aContains && bContains) {
+                        return 1;
+                    }
+                    return 0;
+                })
+                .toList();
 
         this.clearEntries();
-        for (KeyBinding keyBinding : keyBindings) {
+        for (KeyBinding keyBinding : sortedKeyBindings) {
             this.addEntry(new Entry(keyBinding));
         }
         this.setScrollY(0.0);
@@ -127,6 +144,12 @@ public class KeybindsListWidget extends ElementListWidget<KeybindsListWidget.Ent
         }
 
         protected void update(List<List<KeyBinding>> conflictKeyBindings) {
+            if (this.binding.containsSearchText(sharedData.searchText)) {
+                this.nameWidget.setMessage(this.binding.getDisplayName().formatted(Formatting.YELLOW, Formatting.BOLD));
+            } else {
+                this.nameWidget.setMessage(this.binding.getDisplayName());
+            }
+
             List<KeyBinding> conflictedBindings = this.binding.getKeyCodes().isEmpty() ? null : conflictKeyBindings
                     .stream()
                     .filter(list -> list.contains(this.binding))
