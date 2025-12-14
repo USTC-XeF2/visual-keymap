@@ -10,7 +10,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.Positioner;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.InputUtil;
@@ -35,6 +38,20 @@ public class VisualKeymapScreen extends GameOptionsScreen {
 
     @Override
     protected void addOptions() {
+    }
+
+    @Override
+    protected void initHeader() {
+        DirectionalLayoutWidget directionalLayoutWidget = this.layout.addHeader(DirectionalLayoutWidget.vertical().spacing(4));
+        directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
+        directionalLayoutWidget.add(new TextWidget(this.title, this.textRenderer));
+        TextFieldWidget searchBox = directionalLayoutWidget.add(new TextFieldWidget(this.textRenderer, 0, 0, 200, 15, Text.empty()));
+        searchBox.setPlaceholder(Text.translatable(VisualKeymap.getTranslationKey("gui.search_hint")).fillStyle(TextFieldWidget.SEARCH_STYLE));
+        searchBox.setChangedListener(search -> {
+            this.sharedData.searchText = search;
+            this.keybindsListWidget.createEntries();
+        });
+        this.layout.setHeaderHeight((int) (12.0 + 9.0 + 15.0));
     }
 
     @Override
@@ -144,6 +161,7 @@ public class VisualKeymapScreen extends GameOptionsScreen {
     }
 
     public static class SharedData {
+        public String searchText = "";
         public Integer selectedKeyCode = null;
         public KeyBinding selectedKeyBinding = null;
     }

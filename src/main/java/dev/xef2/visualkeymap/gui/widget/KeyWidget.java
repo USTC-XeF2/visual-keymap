@@ -99,8 +99,15 @@ public class KeyWidget extends PressableWidget {
             color = KEY_BACKGROUND_COLOR;
         }
 
-        int borderColor = this.sharedData.selectedKeyCode != null && this.sharedData.selectedKeyCode == this.key.getCode()
-                ? Colors.WHITE : Colors.BLACK;
+        int borderColor;
+        if (this.sharedData.selectedKeyCode != null && this.sharedData.selectedKeyCode == this.key.getCode()) {
+            borderColor = Colors.WHITE;
+        } else if (this.bindings.stream().anyMatch(
+                binding -> binding.containsSearchText(this.sharedData.searchText))) {
+            borderColor = Colors.YELLOW;
+        } else {
+            borderColor = Colors.BLACK;
+        }
 
         // 2. 绘制边框
         context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), borderColor);

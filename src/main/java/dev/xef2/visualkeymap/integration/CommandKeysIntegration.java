@@ -12,6 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -60,6 +61,13 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
                     .filter(key -> !key.equals(InputUtil.UNKNOWN_KEY))
                     .map(InputUtil.Key::getCode)
                     .toList();
+        }
+
+        @Override
+        protected List<String> getSearchableStrings() {
+            ArrayList<String> strings = new ArrayList<>(super.getSearchableStrings());
+            strings.addAll(this.macro.getMessages().stream().map(m -> m.string).toList());
+            return strings;
         }
 
         @Override

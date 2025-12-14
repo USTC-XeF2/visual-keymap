@@ -1,6 +1,7 @@
 {
     "visualkeymap.gui.open_keymap": "可视化键位图...",
     "visualkeymap.gui.title": "可视化键位图",
+    "visualkeymap.gui.search_hint": "搜索...",
     "visualkeymap.gui.bindings_more": "还有 %s 个...",
     "visualkeymap.gui.conflict_title": "冲突的按键绑定",
 
