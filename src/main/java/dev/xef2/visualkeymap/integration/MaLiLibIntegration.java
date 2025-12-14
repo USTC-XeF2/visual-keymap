@@ -67,12 +67,12 @@ public class MaLiLibIntegration implements VisualKeymapApi<MaLiLibIntegration.Ma
 
         @Override
         public boolean isDefault() {
-            return this.hotkey.getStringValue().equals(this.hotkey.getDefaultStringValue());
+            return !this.hotkey.getKeybind().isModified();
         }
 
         @Override
         public void resetToDefault() {
-            this.hotkey.resetToDefault();
+            this.hotkey.getKeybind().resetToDefault();
         }
     }
 }
