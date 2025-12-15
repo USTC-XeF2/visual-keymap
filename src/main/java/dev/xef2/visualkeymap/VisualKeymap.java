@@ -7,6 +7,8 @@ import dev.xef2.visualkeymap.integration.CommandKeysIntegration;
 import dev.xef2.visualkeymap.integration.MaLiLibIntegration;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +22,9 @@ public class VisualKeymap implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        FabricLoader.getInstance().getEntrypointContainers(MOD_ID, VisualKeymapApi.class).forEach(entrypoint -> {
+        FabricLoader loader = FabricLoader.getInstance();
+
+        loader.getEntrypointContainers(MOD_ID, VisualKeymapApi.class).forEach(entrypoint -> {
             try {
                 VisualKeymapApi<?> api = entrypoint.getEntrypoint();
                 apiImpl.add(api);
@@ -28,11 +32,11 @@ public class VisualKeymap implements ClientModInitializer {
             }
         });
 
-        if (FabricLoader.getInstance().isModLoaded("malilib")) {
+        if (loader.isModLoaded("malilib")) {
             apiImpl.add(new MaLiLibIntegration());
         }
 
-        if (FabricLoader.getInstance().isModLoaded("commandkeys")) {
+        if (loader.isModLoaded("commandkeys")) {
             apiImpl.add(new CommandKeysIntegration());
         }
     }
@@ -47,5 +51,9 @@ public class VisualKeymap implements ClientModInitializer {
 
     public static String getTranslationKey(String key) {
         return MOD_ID + "." + key;
+    }
+
+    public static MutableText getTranslationText(String key, Object... args) {
+        return Text.translatable(getTranslationKey(key), args);
     }
 }
