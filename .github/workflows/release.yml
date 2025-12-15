@@ -26,16 +26,19 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew build
 
-      - name: Find built artifact
-        id: get_path
-        run: |
-          ARTIFACT_PATH=$(find build/libs -name "*.jar" -not -name "*-sources.jar" -type f | head -n 1)
-          echo "path=$ARTIFACT_PATH" >> $GITHUB_OUTPUT
+      - name: Generate Changelog
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+          restrictToTypes: feat,fix
+          writeToFile: false
 
       - name: Publish
         uses: Kira-NT/mc-publish@v3.3.0
         with:
-          files: ${{ steps.get_path.outputs.path }}
+          files: build/libs/!(*-@(dev|sources|javadoc)).jar
 
           modrinth-id: uJWhARde
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
@@ -44,3 +47,4 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          changelog: ${{ steps.changelog.outputs.changes }}
