@@ -10,7 +10,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -36,7 +35,7 @@ public class ControlsOptionsScreenMixin {
         MinecraftClient client = MinecraftClient.getInstance();
 
         ButtonWidget viewVisualButton = ButtonWidget.builder(
-                Text.translatable(VisualKeymap.getTranslationKey("gui.open_keymap")),
+                VisualKeymap.getTranslationText("gui.open_keymap"),
                 (button) -> client.setScreen(new VisualKeymapScreen(
                         (ControlsOptionsScreen) (Object) this,
                         client.options

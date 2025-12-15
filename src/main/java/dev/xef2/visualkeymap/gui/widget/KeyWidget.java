@@ -61,8 +61,8 @@ public class KeyWidget extends PressableWidget {
             if (i < MAX_DISPLAYED_BINDINGS) {
                 tooltipText.append(this.bindings.get(i).getDisplayName());
             } else {
-                tooltipText.append(Text.translatable(
-                        VisualKeymap.getTranslationKey("gui.bindings_more"),
+                tooltipText.append(VisualKeymap.getTranslationText(
+                        "gui.bindings_more",
                         this.bindings.size() - MAX_DISPLAYED_BINDINGS
                 ).formatted(Formatting.ITALIC, Formatting.GRAY));
                 break;

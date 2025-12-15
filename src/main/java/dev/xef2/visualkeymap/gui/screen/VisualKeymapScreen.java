@@ -33,7 +33,7 @@ public class VisualKeymapScreen extends GameOptionsScreen {
     private KeybindsListWidget keybindsListWidget;
 
     public VisualKeymapScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, Text.translatable(VisualKeymap.getTranslationKey("gui.title")));
+        super(parent, gameOptions, VisualKeymap.getTranslationText("gui.keymap_title"));
     }
 
     @Override
@@ -42,11 +42,11 @@ public class VisualKeymapScreen extends GameOptionsScreen {
 
     @Override
     protected void initHeader() {
-        DirectionalLayoutWidget directionalLayoutWidget = this.layout.addHeader(DirectionalLayoutWidget.vertical().spacing(4));
-        directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
-        directionalLayoutWidget.add(new TextWidget(this.title, this.textRenderer));
-        TextFieldWidget searchBox = directionalLayoutWidget.add(new TextFieldWidget(this.textRenderer, 0, 0, 200, 15, Text.empty()));
-        searchBox.setPlaceholder(Text.translatable(VisualKeymap.getTranslationKey("gui.search_hint")).fillStyle(TextFieldWidget.SEARCH_STYLE));
+        DirectionalLayoutWidget header = this.layout.addHeader(DirectionalLayoutWidget.vertical().spacing(4));
+        header.getMainPositioner().alignHorizontalCenter();
+        header.add(new TextWidget(this.title, this.textRenderer));
+        TextFieldWidget searchBox = header.add(new TextFieldWidget(this.textRenderer, 0, 0, 200, 15, Text.empty()));
+        searchBox.setPlaceholder(VisualKeymap.getTranslationText("gui.search_hint").fillStyle(TextFieldWidget.SEARCH_STYLE));
         searchBox.setChangedListener(search -> {
             this.sharedData.searchText = search;
             this.keybindsListWidget.createEntries();
