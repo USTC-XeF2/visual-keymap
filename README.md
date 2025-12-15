@@ -10,7 +10,7 @@ You can open the key map interface through the `Controls - Visual Keymap` menu, 
 
 ## Support platform
 
-Fabric 1.21.10 and above versions
+Fabric 1.21.9 and above versions
 
 ## Integration
 
