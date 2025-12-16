@@ -24,7 +24,7 @@ public abstract class KeyBinding {
     }
 
     public MutableText getDisplayName() {
-        return this.category.copy().append(Text.of(" - ")).append(this.name);
+        return this.category.copy().append(" - ").append(this.name);
     }
 
     public int getMaxBoundKeys() {
@@ -80,17 +80,17 @@ public abstract class KeyBinding {
         MutableText text = Text.empty();
         List<Integer> modifierKeyCodes = this.getModifierKeyCodes();
         if (!modifierKeyCodes.isEmpty()) {
-            MutableText modifierText = Text.of("[ ").copy().formatted(Formatting.ITALIC);
+            MutableText modifierText = Text.literal("[ ");
             for (int modifierKeyCode : modifierKeyCodes) {
                 modifierText.append(getLocalizedTextFromCode(modifierKeyCode));
                 modifierText.append(" + ");
             }
             modifierText.append("] ");
-            text.append(modifierText);
+            text.append(modifierText.formatted(Formatting.ITALIC));
         }
         for (int i = 0; i < keyCodes.size(); i++) {
             if (i > 0) {
-                text.append(Text.of(" + "));
+                text.append(" + ");
             }
             text.append(getLocalizedTextFromCode(keyCodes.get(i)));
         }

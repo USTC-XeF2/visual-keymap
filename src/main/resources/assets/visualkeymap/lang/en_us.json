@@ -1,9 +1,9 @@
 {
     "visualkeymap.gui.open_keymap": "Visual Keymap...",
-    "visualkeymap.gui.title": "Visual Keymap",
+    "visualkeymap.gui.keymap_title": "Visual Keymap",
     "visualkeymap.gui.search_hint": "Search...",
-    "visualkeymap.gui.bindings_more": "and %s more...",
-    "visualkeymap.gui.conflict_title": "Conflict Bindings",
+    "visualkeymap.gui.tooltip.bindings_more": "and %s more...",
+    "visualkeymap.gui.tooltip.conflict": "Conflict Bindings",
 
     "visualkeymap.key.left.alt": "Alt",
     "visualkeymap.key.left.control": "Ctrl",
