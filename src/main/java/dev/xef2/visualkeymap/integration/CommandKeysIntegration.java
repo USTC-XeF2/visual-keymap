@@ -1,5 +1,6 @@
 package dev.xef2.visualkeymap.integration;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.commandkeys.CommandKeys;
 import dev.terminalmc.commandkeys.config.Config;
 import dev.terminalmc.commandkeys.config.Keybind;
@@ -9,8 +10,7 @@ import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.api.VisualKeymapApi;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +46,8 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
                 Keybind keybind
         ) {
             super(
-                    Text.translatable("key.category.commandkeys.main"),
-                    Text.translatable("option.commandkeys.profile", profile.name),
+                    Component.translatable("key.category.commandkeys.main"),
+                    Component.translatable("option.commandkeys.profile", profile.name),
                     2
             );
             this.profile = profile;
@@ -58,8 +58,8 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
         @Override
         public List<Integer> getKeyCodes() {
             return Stream.of(this.keybind.getLimitKey(), this.keybind.getKey())
-                    .filter(key -> !key.equals(InputUtil.UNKNOWN_KEY))
-                    .map(InputUtil.Key::getCode)
+                    .filter(key -> !key.equals(InputConstants.UNKNOWN))
+                    .map(InputConstants.Key::getValue)
                     .toList();
         }
 
@@ -71,9 +71,9 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
         }
 
         @Override
-        public void setBoundKeys(List<InputUtil.Key> keys) {
-            InputUtil.Key key = InputUtil.UNKNOWN_KEY;
-            InputUtil.Key limitKey = InputUtil.UNKNOWN_KEY;
+        public void setBoundKeys(List<InputConstants.Key> keys) {
+            InputConstants.Key key = InputConstants.UNKNOWN;
+            InputConstants.Key limitKey = InputConstants.UNKNOWN;
 
             if (keys.size() == 1) {
                 key = keys.getFirst();

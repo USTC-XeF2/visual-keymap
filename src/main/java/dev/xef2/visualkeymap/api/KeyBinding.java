@@ -1,11 +1,11 @@
 package dev.xef2.visualkeymap.api;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -13,17 +13,17 @@ import java.util.stream.Stream;
 @Environment(EnvType.CLIENT)
 public abstract class KeyBinding {
 
-    private final Text category;
-    private final Text name;
+    private final Component category;
+    private final Component name;
     private final int maxBoundKeys;
 
-    public KeyBinding(Text category, Text name, int maxBoundKeys) {
+    public KeyBinding(Component category, Component name, int maxBoundKeys) {
         this.category = category;
         this.name = name;
         this.maxBoundKeys = maxBoundKeys;
     }
 
-    public MutableText getDisplayName() {
+    public MutableComponent getDisplayName() {
         return this.category.copy().append(" - ").append(this.name);
     }
 
@@ -64,35 +64,35 @@ public abstract class KeyBinding {
                 .toList();
     }
 
-    private static Text getLocalizedTextFromCode(int code) {
-        InputUtil.Type inputType = code >= 0 && code <= 7
-                ? InputUtil.Type.MOUSE
-                : InputUtil.Type.KEYSYM;
-        return inputType.createFromCode(code).getLocalizedText();
+    private static Component getDisplayNameFromCode(int code) {
+        InputConstants.Type inputType = code >= 0 && code <= 7
+                ? InputConstants.Type.MOUSE
+                : InputConstants.Type.KEYSYM;
+        return inputType.getOrCreate(code).getDisplayName();
     }
 
-    public Text getBoundKeysLocalizedText() {
+    public Component getBoundKeysLocalizedText() {
         List<Integer> keyCodes = this.getKeyCodes();
         if (keyCodes.isEmpty()) {
-            return Text.translatable("key.keyboard.unknown");
+            return Component.translatable("key.keyboard.unknown");
         }
 
-        MutableText text = Text.empty();
+        MutableComponent text = Component.empty();
         List<Integer> modifierKeyCodes = this.getModifierKeyCodes();
         if (!modifierKeyCodes.isEmpty()) {
-            MutableText modifierText = Text.literal("[ ");
+            MutableComponent modifierText = Component.literal("[ ");
             for (int modifierKeyCode : modifierKeyCodes) {
-                modifierText.append(getLocalizedTextFromCode(modifierKeyCode));
+                modifierText.append(getDisplayNameFromCode(modifierKeyCode));
                 modifierText.append(" + ");
             }
             modifierText.append("] ");
-            text.append(modifierText.formatted(Formatting.ITALIC));
+            text.append(modifierText.withStyle(ChatFormatting.ITALIC));
         }
         for (int i = 0; i < keyCodes.size(); i++) {
             if (i > 0) {
                 text.append(" + ");
             }
-            text.append(getLocalizedTextFromCode(keyCodes.get(i)));
+            text.append(getDisplayNameFromCode(keyCodes.get(i)));
         }
         return text;
     }
@@ -100,8 +100,8 @@ public abstract class KeyBinding {
     protected List<String> getSearchableStrings() {
         return Stream.concat(
                 Stream.of(this.category, this.name),
-                this.getFullKeyCodes().stream().map(KeyBinding::getLocalizedTextFromCode)
-        ).map(Text::getString).toList();
+                this.getFullKeyCodes().stream().map(KeyBinding::getDisplayNameFromCode)
+        ).map(Component::getString).toList();
     }
 
     public final boolean containsSearchText(String searchText) {
@@ -114,7 +114,7 @@ public abstract class KeyBinding {
         return searchTerms.stream().allMatch(targetString::contains);
     }
 
-    abstract public void setBoundKeys(List<InputUtil.Key> keys);
+    abstract public void setBoundKeys(List<InputConstants.Key> keys);
 
     abstract public boolean isDefault();
 
