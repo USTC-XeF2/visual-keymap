@@ -1,5 +1,6 @@
 package dev.xef2.visualkeymap.gui.widget;
 
+import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.gui.screen.VisualKeymapScreen;
 import net.fabricmc.api.EnvType;
@@ -158,12 +159,11 @@ public class KeybindsListWidget extends ElementListWidget<KeybindsListWidget.Ent
 
             if (conflictedBindings != null) {
                 MutableText tooltipText = Text.empty();
-                tooltipText.append(Text.translatable("visualkeymap.gui.conflict_title")
+                tooltipText.append(VisualKeymap.getTranslationText("gui.tooltip.conflict")
                         .formatted(Formatting.BOLD, Formatting.GOLD));
                 for (KeyBinding binding : conflictedBindings) {
                     if (binding != this.binding) {
-                        tooltipText.append(Text.literal("\n"))
-                                .append(binding.getDisplayName());
+                        tooltipText.append("\n").append(binding.getDisplayName());
                     }
                 }
                 this.editButton.setTooltip(Tooltip.of(tooltipText));

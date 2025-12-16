@@ -20,6 +20,7 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,19 +137,27 @@ public class KeyboardWidget extends WrapperWidget {
 
         public void updateBindings() {
             this.bindings = bindingGetter.apply(this.key);
-            this.conflict = !KeyBinding.getConflictBindings(this.bindings).isEmpty();
+            List<? extends KeyBinding> conflictBindings = KeyBinding.getConflictBindings(this.bindings).stream()
+                    .flatMap(Collection::stream).toList();
+            List<? extends KeyBinding> uniqueBindings = this.bindings.stream()
+                    .filter(binding -> !conflictBindings.contains(binding))
+                    .toList();
+            this.conflict = !conflictBindings.isEmpty();
 
             MutableText tooltipText = Text.empty();
             tooltipText.append(this.key.getLocalizedText().copy().formatted(Formatting.BOLD, Formatting.GOLD));
 
-            for (int i = 0; i < this.bindings.size(); i++) {
-                tooltipText.append(Text.literal("\n"));
-                if (i < MAX_DISPLAYED_BINDINGS) {
-                    tooltipText.append(this.bindings.get(i).getDisplayName());
+            for (KeyBinding conflictBinding : conflictBindings) {
+                tooltipText.append("\n").append(conflictBinding.getDisplayName().formatted(Formatting.RED));
+            }
+            for (int i = 0; i < uniqueBindings.size(); i++) {
+                tooltipText.append("\n");
+                if (i < MAX_DISPLAYED_BINDINGS - conflictBindings.size()) {
+                    tooltipText.append(uniqueBindings.get(i).getDisplayName());
                 } else {
                     tooltipText.append(VisualKeymap.getTranslationText(
-                            "gui.bindings_more",
-                            this.bindings.size() - MAX_DISPLAYED_BINDINGS
+                            "gui.tooltip.bindings_more",
+                            uniqueBindings.size() - i
                     ).formatted(Formatting.ITALIC, Formatting.GRAY));
                     break;
                 }
