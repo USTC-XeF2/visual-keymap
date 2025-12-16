@@ -1,12 +1,13 @@
 package dev.xef2.visualkeymap.api;
 
-import dev.xef2.visualkeymap.mixin.KeyBindingAccessor;
+import com.mojang.blaze3d.platform.InputConstants;
+import dev.xef2.visualkeymap.mixin.KeyMappingAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,7 @@ public class MinecraftImpl implements VisualKeymapApi<MinecraftImpl.MinecraftKey
 
     @Override
     public List<MinecraftKeyBinding> getKeyBindings() {
-        return Arrays.stream(MinecraftClient.getInstance().options.allKeys).map(MinecraftKeyBinding::new).toList();
+        return Arrays.stream(Minecraft.getInstance().options.keyMappings).map(MinecraftKeyBinding::new).toList();
     }
 
     @Override
@@ -26,46 +27,46 @@ public class MinecraftImpl implements VisualKeymapApi<MinecraftImpl.MinecraftKey
 
     public static class MinecraftKeyBinding extends KeyBinding {
 
-        private final net.minecraft.client.option.KeyBinding binding;
+        private final KeyMapping keyMapping;
 
-        public MinecraftKeyBinding(net.minecraft.client.option.KeyBinding binding) {
-            super(binding.getCategory().getLabel(), Text.translatable(binding.getId()), 1);
-            this.binding = binding;
+        public MinecraftKeyBinding(KeyMapping keyMapping) {
+            super(keyMapping.getCategory().label(), Component.translatable(keyMapping.getName()), 1);
+            this.keyMapping = keyMapping;
         }
 
         @Override
         public List<Integer> getKeyCodes() {
-            InputUtil.Key boundKey = ((KeyBindingAccessor) this.binding).getBoundKey();
-            return boundKey.equals(InputUtil.UNKNOWN_KEY) ? List.of() : List.of(boundKey.getCode());
+            InputConstants.Key boundKey = ((KeyMappingAccessor) this.keyMapping).getKey();
+            return boundKey.equals(InputConstants.UNKNOWN) ? List.of() : List.of(boundKey.getValue());
         }
 
         @Override
         public List<Integer> getModifierKeyCodes() {
-            GameOptions options = MinecraftClient.getInstance().options;
-            if (Arrays.stream(options.debugKeys).anyMatch(binding -> binding == this.binding)) {
-                return List.of(((KeyBindingAccessor) options.debugModifierKey).getBoundKey().getCode());
+            Options options = Minecraft.getInstance().options;
+            if (Arrays.stream(options.debugKeys).anyMatch(binding -> binding == this.keyMapping)) {
+                return List.of(((KeyMappingAccessor) options.keyDebugModifier).getKey().getValue());
             }
             return super.getModifierKeyCodes();
         }
 
         @Override
         public int getOrder() {
-            return ((KeyBindingAccessor) this.binding).getOrder();
+            return ((KeyMappingAccessor) this.keyMapping).getOrder();
         }
 
         @Override
-        public void setBoundKeys(List<InputUtil.Key> keys) {
-            this.binding.setBoundKey(keys.isEmpty() ? InputUtil.UNKNOWN_KEY : keys.getFirst());
+        public void setBoundKeys(List<InputConstants.Key> keys) {
+            this.keyMapping.setKey(keys.isEmpty() ? InputConstants.UNKNOWN : keys.getFirst());
         }
 
         @Override
         public boolean isDefault() {
-            return this.binding.isDefault();
+            return this.keyMapping.isDefault();
         }
 
         @Override
         public void resetToDefault() {
-            this.binding.setBoundKey(this.binding.getDefaultKey());
+            this.keyMapping.setKey(this.keyMapping.getDefaultKey());
         }
     }
 }

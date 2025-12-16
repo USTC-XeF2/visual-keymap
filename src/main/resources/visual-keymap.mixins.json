@@ -6,9 +6,9 @@
     "mixins": [
     ],
     "client": [
-        "ControlsOptionsScreenMixin",
-        "KeyBindingAccessor",
-        "ThreePartsLayoutWidgetAccessor"
+        "ControlsScreenMixin",
+        "HeaderAndFooterLayoutAccessor",
+        "KeyMappingAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -1,5 +1,6 @@
 package dev.xef2.visualkeymap.integration;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.api.VisualKeymapApi;
 import fi.dy.masa.malilib.config.ConfigManager;
@@ -9,8 +10,7 @@ import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindCategory;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class MaLiLibIntegration implements VisualKeymapApi<MaLiLibIntegration.Ma
         private final IHotkey hotkey;
 
         public MaLiLibKeyBinding(KeybindCategory category, IHotkey hotkey) {
-            super(Text.of(category.getModName()), Text.of(hotkey.getConfigGuiDisplayName()), 4);
+            super(Component.literal(category.getModName()), Component.literal(hotkey.getConfigGuiDisplayName()), 4);
             this.hotkey = hotkey;
         }
 
@@ -57,10 +57,10 @@ public class MaLiLibIntegration implements VisualKeymapApi<MaLiLibIntegration.Ma
         }
 
         @Override
-        public void setBoundKeys(List<InputUtil.Key> keys) {
+        public void setBoundKeys(List<InputConstants.Key> keys) {
             IKeybind keybind = this.hotkey.getKeybind();
             keybind.clearKeys();
-            keys.stream().map(InputUtil.Key::getCode)
+            keys.stream().map(InputConstants.Key::getValue)
                     .map(code -> code >= 0 && code <= 7 ? code - 100 : code)
                     .forEach(keybind::addKey);
         }

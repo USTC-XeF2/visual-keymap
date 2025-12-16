@@ -1,76 +1,77 @@
 package dev.xef2.visualkeymap.gui.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.gui.widget.KeybindsListWidget;
 import dev.xef2.visualkeymap.gui.widget.KeyboardWidget;
-import dev.xef2.visualkeymap.mixin.ThreePartsLayoutWidgetAccessor;
+import dev.xef2.visualkeymap.mixin.HeaderAndFooterLayoutAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.gui.widget.Positioner;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.layouts.LayoutSettings;
+import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
-public class VisualKeymapScreen extends GameOptionsScreen {
+public class VisualKeymapScreen extends OptionsSubScreen {
 
     private List<? extends KeyBinding> keyBindings = List.of();
     private final SharedData sharedData = new SharedData();
-    private final List<InputUtil.Key> pressedKeys = new ArrayList<>();
+    private final List<InputConstants.Key> pressedKeys = new ArrayList<>();
 
     private KeyboardWidget keyboardWidget;
     private KeybindsListWidget keybindsListWidget;
 
-    public VisualKeymapScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, VisualKeymap.getTranslationText("gui.keymap_title"));
+    public VisualKeymapScreen(Screen parent, Options options) {
+        super(parent, options, VisualKeymap.getTranslatedComponent("gui.keymap_title"));
     }
 
     @Override
-    protected void addOptions() {
-    }
-
-    @Override
-    protected void initHeader() {
-        DirectionalLayoutWidget header = this.layout.addHeader(DirectionalLayoutWidget.vertical().spacing(4));
-        header.getMainPositioner().alignHorizontalCenter();
-        header.add(new TextWidget(this.title, this.textRenderer));
-        TextFieldWidget searchBox = header.add(new TextFieldWidget(this.textRenderer, 0, 0, 200, 15, Text.empty()));
-        searchBox.setPlaceholder(VisualKeymap.getTranslationText("gui.search_hint").fillStyle(TextFieldWidget.SEARCH_STYLE));
-        searchBox.setChangedListener(search -> {
-            this.sharedData.searchText = search;
+    protected void addTitle() {
+        LinearLayout header = this.layout.addToHeader(LinearLayout.vertical().spacing(4));
+        header.defaultCellSetting().alignHorizontallyCenter();
+        header.addChild(new StringWidget(this.title, this.font));
+        EditBox searchBox = header.addChild(new EditBox(this.font, 200, 15, Component.empty()));
+        searchBox.setHint(VisualKeymap.getTranslatedComponent("gui.search_hint").withStyle(EditBox.SEARCH_HINT_STYLE));
+        searchBox.setResponder(searchText -> {
+            this.sharedData.searchText = searchText;
             this.keybindsListWidget.createEntries();
         });
         this.layout.setHeaderHeight((int) (12.0 + 9.0 + 15.0));
     }
 
     @Override
-    protected void initBody() {
+    protected void addContents() {
         this.keyBindings = VisualKeymap.getKeyBindings();
 
-        this.keyboardWidget = this.layout.addBody(new KeyboardWidget(
+        this.keyboardWidget = this.layout.addToContents(new KeyboardWidget(
                 0, 0, 0, 0,
                 true, sharedData,
                 this::getBindingsForKey, this::setSelectedKey
-        ), Positioner::alignTop);
-        this.keybindsListWidget = this.layout.addBody(new KeybindsListWidget(
-                this.client, 0, 0, 0, sharedData,
+        ), LayoutSettings::alignVerticallyTop);
+        this.keybindsListWidget = this.layout.addToContents(new KeybindsListWidget(
+                this.minecraft, 0, 0, 0, sharedData,
                 k -> {
                     k.resetToDefault();
                     this.keyboardWidget.updateKeyBindings();
                 }
-        ), Positioner::alignBottom);
+        ), LayoutSettings::alignVerticallyBottom);
         this.keybindsListWidget.setKeyBindings(this.getUnboundBindings());
+    }
+
+    @Override
+    protected void addOptions() {
     }
 
     private List<? extends KeyBinding> getUnboundBindings() {
@@ -79,14 +80,14 @@ public class VisualKeymapScreen extends GameOptionsScreen {
                 .toList();
     }
 
-    private List<? extends KeyBinding> getBindingsForKey(InputUtil.Key key) {
+    private List<? extends KeyBinding> getBindingsForKey(InputConstants.Key key) {
         return this.keyBindings.stream()
-                .filter(binding -> binding.getFullKeyCodes().contains(key.getCode()))
+                .filter(binding -> binding.getFullKeyCodes().contains(key.getValue()))
                 .toList();
     }
 
-    private void setSelectedKey(InputUtil.Key key) {
-        int keyCode = key.getCode();
+    private void setSelectedKey(InputConstants.Key key) {
+        int keyCode = key.getValue();
         if (this.sharedData.selectedKeyCode != null && this.sharedData.selectedKeyCode == keyCode) {
             this.sharedData.selectedKeyCode = null;
             this.keybindsListWidget.setKeyBindings(this.getUnboundBindings());
@@ -98,15 +99,15 @@ public class VisualKeymapScreen extends GameOptionsScreen {
     }
 
     @Override
-    protected void refreshWidgetPositions() {
-        int cHeight = this.layout.getContentHeight();
+    protected void repositionElements() {
+        int contentHeight = this.layout.getContentHeight();
         int keyboardPadding = 5;
 
-        ((ThreePartsLayoutWidgetAccessor) this.layout).getBody().setMinHeight(cHeight);
-        this.keyboardWidget.setSize(this.width - keyboardPadding * 2, cHeight / 2);
-        this.keybindsListWidget.position(
-                this.width, cHeight / 2 - keyboardPadding, this.layout.getHeaderHeight() + cHeight / 2 + keyboardPadding);
-        super.refreshWidgetPositions();
+        ((HeaderAndFooterLayoutAccessor) this.layout).getContentsFrame().setMinHeight(contentHeight);
+        this.keyboardWidget.setSize(this.width - keyboardPadding * 2, contentHeight / 2);
+        this.keybindsListWidget.updateSizeAndPosition(
+                this.width, contentHeight / 2 - keyboardPadding, this.layout.getHeaderHeight() + contentHeight / 2 + keyboardPadding);
+        super.repositionElements();
     }
 
     private void setKeyBinding(boolean ended) {
@@ -120,37 +121,37 @@ public class VisualKeymapScreen extends GameOptionsScreen {
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(@NotNull MouseButtonEvent mouseButtonEvent, boolean bl) {
         if (this.sharedData.selectedKeyBinding != null) {
-            this.pressedKeys.add(InputUtil.Type.MOUSE.createFromCode(click.button()));
+            this.pressedKeys.add(InputConstants.Type.MOUSE.getOrCreate(mouseButtonEvent.button()));
             this.setKeyBinding(true);
             return true;
         } else {
-            return super.mouseClicked(click, doubled);
+            return super.mouseClicked(mouseButtonEvent, bl);
         }
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
-        InputUtil.Key key = InputUtil.fromKeyCode(input);
+    public boolean keyPressed(@NotNull KeyEvent keyEvent) {
+        InputConstants.Key key = InputConstants.getKey(keyEvent);
         if (this.sharedData.selectedKeyBinding != null && !this.pressedKeys.contains(key)) {
-            if (!input.isEscape()) {
+            if (!keyEvent.isEscape()) {
                 this.pressedKeys.add(key);
             }
-            this.setKeyBinding(input.isEscape());
+            this.setKeyBinding(keyEvent.isEscape());
             return true;
         } else {
-            return super.keyPressed(input);
+            return super.keyPressed(keyEvent);
         }
     }
 
     @Override
-    public boolean keyReleased(KeyInput input) {
+    public boolean keyReleased(@NotNull KeyEvent keyEvent) {
         if (this.sharedData.selectedKeyBinding != null) {
             this.setKeyBinding(true);
             return true;
         } else {
-            return super.keyReleased(input);
+            return super.keyReleased(keyEvent);
         }
     }
 

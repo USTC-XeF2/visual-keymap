@@ -1,24 +1,25 @@
 package dev.xef2.visualkeymap.gui.widget;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.gui.screen.VisualKeymapScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.WrapperWidget;
-import net.minecraft.client.input.AbstractInput;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.layouts.AbstractLayout;
+import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,14 +29,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
-public class KeyboardWidget extends WrapperWidget {
+public class KeyboardWidget extends AbstractLayout {
 
     private static final int KEY_SPACING = 1;
 
     private int maxHeight;
     private final VisualKeymapScreen.SharedData sharedData;
-    private final Function<InputUtil.Key, List<? extends KeyBinding>> bindingGetter;
-    private final Consumer<InputUtil.Key> keySelector;
+    private final Function<InputConstants.Key, List<? extends KeyBinding>> bindingGetter;
+    private final Consumer<InputConstants.Key> keySelector;
 
     private int keySize;
     private final KeyLayoutHelper.KeyboardLayout keyboardLayout;
@@ -44,8 +45,8 @@ public class KeyboardWidget extends WrapperWidget {
     public KeyboardWidget(
             int x, int y, int width, int maxHeight,
             boolean isFull, VisualKeymapScreen.SharedData sharedData,
-            Function<InputUtil.Key, List<? extends KeyBinding>> bindingGetter,
-            Consumer<InputUtil.Key> keySelector
+            Function<InputConstants.Key, List<? extends KeyBinding>> bindingGetter,
+            Consumer<InputConstants.Key> keySelector
     ) {
         super(x, y, width, 0);
         this.maxHeight = maxHeight;
@@ -57,10 +58,10 @@ public class KeyboardWidget extends WrapperWidget {
 
         for (KeyLayoutHelper.KeyLayout keyLayout : this.keyboardLayout.keys()) {
             String translationKey = VisualKeymap.getTranslationKey("key." + keyLayout.translationKey());
-            InputUtil.Key key = keyLayout.getKey();
-            Text text = I18n.hasTranslation(translationKey) ?
-                    Text.translatable(translationKey) :
-                    key.getLocalizedText();
+            InputConstants.Key key = keyLayout.getKey();
+            Component text = I18n.exists(translationKey) ?
+                    Component.translatable(translationKey) :
+                    key.getDisplayName();
             this.keyWidgetMap.put(keyLayout, new KeyWidget(key, text));
         }
 
@@ -78,7 +79,7 @@ public class KeyboardWidget extends WrapperWidget {
     }
 
     @Override
-    public void forEachElement(Consumer<Widget> consumer) {
+    public void visitChildren(@NotNull Consumer<LayoutElement> consumer) {
         this.keyWidgetMap.values().forEach(consumer);
     }
 
@@ -90,7 +91,7 @@ public class KeyboardWidget extends WrapperWidget {
         double totalCols = this.keyboardLayout.columns();
         double totalRows = this.keyboardLayout.rows();
 
-        this.keySize = MathHelper.floor(Math.min(
+        this.keySize = Mth.floor(Math.min(
                 (this.width - (totalCols - 1) * KEY_SPACING) / totalCols,
                 (this.maxHeight - (totalRows - 1) * KEY_SPACING) / totalRows
         ));
@@ -98,7 +99,7 @@ public class KeyboardWidget extends WrapperWidget {
     }
 
     @Override
-    public void refreshPositions() {
+    public void arrangeElements() {
         int totalWidth = getSizeWithSpacing(this.keyboardLayout.columns());
 
         int startX = this.getX() + (this.width - totalWidth) / 2;
@@ -111,12 +112,12 @@ public class KeyboardWidget extends WrapperWidget {
             int x = startX + (int) (keyLayout.col() * (this.keySize + KEY_SPACING));
             int y = startY + (int) (keyLayout.row() * (this.keySize + KEY_SPACING));
 
-            this.keyWidgetMap.get(keyLayout).setDimensionsAndPosition(width, height, x, y);
+            this.keyWidgetMap.get(keyLayout).setRectangle(width, height, x, y);
         }
     }
 
     @Environment(EnvType.CLIENT)
-    private class KeyWidget extends PressableWidget {
+    private class KeyWidget extends AbstractButton {
 
         private static final int KEY_SINGLE_BOUNDED_COLOR = 0xFF006400;
         private static final int KEY_MULTI_UNIQUE_COLOR = 0xFFB8860B;
@@ -124,11 +125,11 @@ public class KeyboardWidget extends WrapperWidget {
         private static final int BORDER_THICKNESS = 1;
         private static final int MAX_DISPLAYED_BINDINGS = 5;
 
-        private final InputUtil.Key key;
+        private final InputConstants.Key key;
         private List<? extends KeyBinding> bindings;
         private boolean conflict;
 
-        public KeyWidget(InputUtil.Key key, Text text) {
+        public KeyWidget(InputConstants.Key key, Component text) {
             super(0, 0, 0, 0, text);
             this.key = key;
 
@@ -144,51 +145,51 @@ public class KeyboardWidget extends WrapperWidget {
                     .toList();
             this.conflict = !conflictBindings.isEmpty();
 
-            MutableText tooltipText = Text.empty();
-            tooltipText.append(this.key.getLocalizedText().copy().formatted(Formatting.BOLD, Formatting.GOLD));
+            MutableComponent tooltipText = Component.empty();
+            tooltipText.append(this.key.getDisplayName().copy().withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD));
 
             for (KeyBinding conflictBinding : conflictBindings) {
-                tooltipText.append("\n").append(conflictBinding.getDisplayName().formatted(Formatting.RED));
+                tooltipText.append("\n").append(conflictBinding.getDisplayName().withStyle(ChatFormatting.RED));
             }
             for (int i = 0; i < uniqueBindings.size(); i++) {
                 tooltipText.append("\n");
                 if (i < MAX_DISPLAYED_BINDINGS - conflictBindings.size()) {
                     tooltipText.append(uniqueBindings.get(i).getDisplayName());
                 } else {
-                    tooltipText.append(VisualKeymap.getTranslationText(
+                    tooltipText.append(VisualKeymap.getTranslatedComponent(
                             "gui.tooltip.bindings_more",
                             uniqueBindings.size() - i
-                    ).formatted(Formatting.ITALIC, Formatting.GRAY));
+                    ).withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
                     break;
                 }
             }
 
-            this.setTooltip(Tooltip.of(tooltipText));
+            this.setTooltip(Tooltip.create(tooltipText));
         }
 
         @Override
-        public void onPress(AbstractInput input) {
+        public void onPress(@NotNull InputWithModifiers inputWithModifiers) {
             keySelector.accept(this.key);
         }
 
         @Override
-        protected void appendClickableNarrations(NarrationMessageBuilder builder) {
-            this.appendDefaultNarrations(builder);
+        protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
+            this.defaultButtonNarrationText(narrationElementOutput);
         }
 
         @Override
-        protected void drawIcon(DrawContext context, int mouseX, int mouseY, float delta) {
+        protected void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float f) {
             int borderColor;
-            if (sharedData.selectedKeyCode != null && sharedData.selectedKeyCode == this.key.getCode()) {
-                borderColor = Colors.WHITE;
+            if (sharedData.selectedKeyCode != null && sharedData.selectedKeyCode == this.key.getValue()) {
+                borderColor = CommonColors.WHITE;
             } else if (this.bindings.stream().anyMatch(
                     binding -> binding.containsSearchText(sharedData.searchText))) {
-                borderColor = Colors.YELLOW;
+                borderColor = CommonColors.YELLOW;
             } else {
-                borderColor = Colors.BLACK;
+                borderColor = CommonColors.BLACK;
             }
 
-            context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), borderColor);
+            guiGraphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), borderColor);
 
             int color;
             int bindCount = this.bindings.size();
@@ -199,16 +200,16 @@ public class KeyboardWidget extends WrapperWidget {
             } else if (bindCount >= 2) {
                 color = KEY_MULTI_UNIQUE_COLOR;
             } else {
-                color = Colors.DARK_GRAY;
+                color = CommonColors.DARK_GRAY;
             }
 
             int innerX = getX() + BORDER_THICKNESS;
             int innerY = getY() + BORDER_THICKNESS;
             int innerWidth = getWidth() - BORDER_THICKNESS * 2;
             int innerHeight = getHeight() - BORDER_THICKNESS * 2;
-            context.fill(innerX, innerY, innerX + innerWidth, innerY + innerHeight, color);
+            guiGraphics.fill(innerX, innerY, innerX + innerWidth, innerY + innerHeight, color);
 
-            this.drawLabel(context.getHoverListener(this, DrawContext.HoverType.NONE));
+            this.renderDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
         }
     }
 }

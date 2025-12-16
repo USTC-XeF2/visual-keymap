@@ -1,8 +1,8 @@
 package dev.xef2.visualkeymap.gui.widget;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.InputUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,12 +129,12 @@ public class KeyLayoutHelper {
             this(translationKey, row, col, widthMult, 1.0);
         }
 
-        public InputUtil.Key getKey() {
+        public InputConstants.Key getKey() {
             String translationKey = this.translationKey;
             if (!translationKey.startsWith("mouse.")) {
                 translationKey = "keyboard." + translationKey;
             }
-            return InputUtil.fromTranslationKey("key." + translationKey);
+            return InputConstants.getKey("key." + translationKey);
         }
     }
 }

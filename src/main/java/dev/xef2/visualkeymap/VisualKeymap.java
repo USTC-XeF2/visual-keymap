@@ -7,8 +7,8 @@ import dev.xef2.visualkeymap.integration.CommandKeysIntegration;
 import dev.xef2.visualkeymap.integration.MaLiLibIntegration;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class VisualKeymap implements ClientModInitializer {
         return MOD_ID + "." + key;
     }
 
-    public static MutableText getTranslationText(String key, Object... args) {
-        return Text.translatable(getTranslationKey(key), args);
+    public static MutableComponent getTranslatedComponent(String key, Object... args) {
+        return Component.translatable(getTranslationKey(key), args);
     }
 }
