@@ -28,6 +28,7 @@ public class MaLiLibIntegration implements VisualKeymapApi<MaLiLibIntegration.Ma
     }
 
     @Override
+    @SuppressWarnings("UnstableApiUsage")
     public void save() {
         ((ConfigManager) ConfigManager.getInstance()).saveAllConfigs();
         InputEventHandler.getKeybindManager().updateUsedKeys();
