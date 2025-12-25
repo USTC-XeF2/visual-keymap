@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -25,6 +26,20 @@ public abstract class KeyBinding {
 
     public MutableComponent getDisplayName() {
         return this.category.copy().append(" - ").append(this.name);
+    }
+
+    @Nullable
+    public Component getComment() {
+        return null;
+    }
+
+    public final Component getTooltip() {
+        Component comment = this.getComment();
+        if (comment == null) {
+            return this.name;
+        }
+        return Component.empty().append(this.name.copy().withStyle(ChatFormatting.BOLD, ChatFormatting.UNDERLINE))
+                .append("\n").append(comment);
     }
 
     public int getMaxBoundKeys() {
