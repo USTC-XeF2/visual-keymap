@@ -102,7 +102,7 @@ public class KeybindsListWidget extends ContainerObjectSelectionList<KeybindsLis
                     binding.getDisplayName(),
                     font
             );
-            this.nameWidget.setTooltip(Tooltip.create(binding.getDisplayName()));
+            this.nameWidget.setTooltip(Tooltip.create(binding.getTooltip()));
             this.editButton = Button.builder(binding.getBoundKeysLocalizedText(), (button) -> {
                         sharedData.selectedKeyBinding = binding;
                         updateAllEntries();

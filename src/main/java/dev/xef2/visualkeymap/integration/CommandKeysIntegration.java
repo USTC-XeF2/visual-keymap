@@ -2,15 +2,14 @@ package dev.xef2.visualkeymap.integration;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.commandkeys.CommandKeys;
-import dev.terminalmc.commandkeys.config.Config;
-import dev.terminalmc.commandkeys.config.Keybind;
-import dev.terminalmc.commandkeys.config.Macro;
-import dev.terminalmc.commandkeys.config.Profile;
+import dev.terminalmc.commandkeys.config.*;
 import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.api.VisualKeymapApi;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +52,21 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
             this.profile = profile;
             this.macro = macro;
             this.keybind = keybind;
+        }
+
+        @Override
+        public Component getComment() {
+            List<Message> messages = this.macro.getMessages();
+            String first = messages.getFirst().string;
+            MutableComponent display = Component.literal(first.isBlank() ? "..." : first);
+
+            int excess = messages.size() - 1;
+            if (excess > 0) {
+                display.append(Component.literal(String.format(" [+%d]", excess))
+                        .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            }
+
+            return display;
         }
 
         @Override

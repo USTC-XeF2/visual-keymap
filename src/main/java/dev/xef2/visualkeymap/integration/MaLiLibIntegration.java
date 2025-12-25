@@ -44,6 +44,15 @@ public class MaLiLibIntegration implements VisualKeymapApi<MaLiLibIntegration.Ma
         }
 
         @Override
+        public Component getComment() {
+            String comment = this.hotkey.getComment();
+            if (comment == null || comment.isEmpty()) {
+                return null;
+            }
+            return Component.literal(comment);
+        }
+
+        @Override
         public List<Integer> getKeyCodes() {
             return this.hotkey.getKeybind().getKeys().stream()
                     .map(key -> key < -1 ? key + 100 : key)
