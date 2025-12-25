@@ -3,12 +3,14 @@ package dev.xef2.visualkeymap.gui.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
+import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.gui.widget.KeybindsListWidget;
 import dev.xef2.visualkeymap.gui.widget.KeyboardWidget;
 import dev.xef2.visualkeymap.mixin.HeaderAndFooterLayoutAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.LayoutSettings;
@@ -17,6 +19,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,7 +60,7 @@ public class VisualKeymapScreen extends OptionsSubScreen {
 
         this.keyboardWidget = this.layout.addToContents(new KeyboardWidget(
                 0, 0, 0, 0,
-                true, sharedData,
+                ModConfig.getInstance().showNumpad, sharedData,
                 this::getBindingsForKey, this::setSelectedKey
         ), LayoutSettings::alignVerticallyTop);
         this.keybindsListWidget = this.layout.addToContents(new KeybindsListWidget(
@@ -72,6 +75,16 @@ public class VisualKeymapScreen extends OptionsSubScreen {
 
     @Override
     protected void addOptions() {
+    }
+
+    @Override
+    protected void addFooter() {
+        LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
+        footer.addChild(Button.builder(VisualKeymap.getTranslatedComponent("gui.open_config"),
+                button -> this.minecraft.setScreen(
+                        new ConfigScreen(new VisualKeymapScreen(this.lastScreen, this.options), this.options))
+        ).build());
+        footer.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).build());
     }
 
     private List<? extends KeyBinding> getUnboundBindings() {

@@ -2,6 +2,7 @@ package dev.xef2.visualkeymap.gui.widget;
 
 import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
+import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.gui.screen.VisualKeymapScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,6 +21,7 @@ import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -51,17 +53,15 @@ public class KeybindsListWidget extends ContainerObjectSelectionList<KeybindsLis
     }
 
     public void createEntries() {
+        List<List<KeyBinding>> conflictKeyBindings = KeyBinding.getConflictBindings(this.keyBindings);
+        Comparator<KeyBinding> keyBindingComparator = Comparator
+                .<KeyBinding>comparingInt(binding -> binding.containsSearchText(sharedData.searchText)
+                        ? -1 : 0)
+                .thenComparingInt(binding -> ModConfig.getInstance().prioritizeConflictingKeybinds
+                        && conflictKeyBindings.stream().anyMatch(list -> list.contains(binding))
+                        ? -1 : 0);
         List<? extends KeyBinding> sortedKeyBindings = this.keyBindings.stream()
-                .sorted((a, b) -> {
-                    boolean aContains = a.containsSearchText(sharedData.searchText);
-                    boolean bContains = b.containsSearchText(sharedData.searchText);
-                    if (aContains && !bContains) {
-                        return -1;
-                    } else if (!aContains && bContains) {
-                        return 1;
-                    }
-                    return 0;
-                })
+                .sorted(keyBindingComparator)
                 .toList();
 
         this.clearEntries();
