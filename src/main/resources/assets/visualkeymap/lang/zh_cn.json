@@ -5,6 +5,11 @@
     "visualkeymap.gui.tooltip.bindings_more": "还有 %s 个...",
     "visualkeymap.gui.tooltip.conflict": "冲突的按键绑定",
 
+    "visualkeymap.gui.open_config": "配置选项",
+    "visualkeymap.gui.config_title": "可视化键位图选项",
+    "visualkeymap.gui.option.show_numpad": "显示小键盘",
+    "visualkeymap.gui.option.prioritize_conflicting_keybinds": "置顶冲突的按键绑定",
+
     "visualkeymap.key.left.alt": "Alt",
     "visualkeymap.key.left.control": "Ctrl",
     "visualkeymap.key.left.shift": "Shift",

@@ -39,6 +39,8 @@ public class VisualKeymap implements ClientModInitializer {
         if (loader.isModLoaded("commandkeys")) {
             apiImpl.add(new CommandKeysIntegration());
         }
+
+        ModConfig.load();
     }
 
     public static List<? extends KeyBinding> getKeyBindings() {

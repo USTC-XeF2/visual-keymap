@@ -5,6 +5,11 @@
     "visualkeymap.gui.tooltip.bindings_more": "and %s more...",
     "visualkeymap.gui.tooltip.conflict": "Conflict Bindings",
 
+    "visualkeymap.gui.open_config": "Config Options",
+    "visualkeymap.gui.config_title": "Visual Keymap Options",
+    "visualkeymap.gui.option.show_numpad": "Show Numpad",
+    "visualkeymap.gui.option.prioritize_conflicting_keybinds": "Prioritize Conflicting Keybinds",
+
     "visualkeymap.key.left.alt": "Alt",
     "visualkeymap.key.left.control": "Ctrl",
     "visualkeymap.key.left.shift": "Shift",
