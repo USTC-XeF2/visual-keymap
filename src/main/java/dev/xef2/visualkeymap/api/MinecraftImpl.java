@@ -57,6 +57,7 @@ public class MinecraftImpl implements VisualKeymapApi<MinecraftImpl.MinecraftKey
         @Override
         public void setBoundKeys(List<InputConstants.Key> keys) {
             this.keyMapping.setKey(keys.isEmpty() ? InputConstants.UNKNOWN : keys.getFirst());
+            KeyMapping.resetMapping();
         }
 
         @Override
@@ -66,7 +67,7 @@ public class MinecraftImpl implements VisualKeymapApi<MinecraftImpl.MinecraftKey
 
         @Override
         public void resetToDefault() {
-            this.keyMapping.setKey(this.keyMapping.getDefaultKey());
+            this.setBoundKeys(List.of(this.keyMapping.getDefaultKey()));
         }
     }
 }
