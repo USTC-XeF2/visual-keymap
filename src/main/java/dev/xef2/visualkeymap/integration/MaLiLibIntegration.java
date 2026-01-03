@@ -12,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
@@ -61,7 +60,7 @@ public class MaLiLibIntegration implements VisualKeymapApi<MaLiLibIntegration.Ma
 
         @Override
         protected List<String> getSearchableStrings() {
-            ArrayList<String> strings = new ArrayList<>(super.getSearchableStrings());
+            List<String> strings = super.getSearchableStrings();
             strings.add(this.hotkey.getName());
             return strings;
         }
