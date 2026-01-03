@@ -9,6 +9,7 @@ import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Environment(EnvType.CLIENT)
@@ -116,7 +117,7 @@ public abstract class KeyBinding {
         return Stream.concat(
                 Stream.of(this.category, this.name),
                 this.getFullKeyCodes().stream().map(KeyBinding::getDisplayNameFromCode)
-        ).map(Component::getString).toList();
+        ).map(Component::getString).collect(Collectors.toList());
     }
 
     public final boolean containsSearchText(String searchText) {

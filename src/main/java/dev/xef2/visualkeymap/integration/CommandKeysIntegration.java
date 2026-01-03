@@ -11,7 +11,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -79,7 +78,7 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
 
         @Override
         protected List<String> getSearchableStrings() {
-            ArrayList<String> strings = new ArrayList<>(super.getSearchableStrings());
+            List<String> strings = super.getSearchableStrings();
             strings.addAll(this.macro.getMessages().stream().map(m -> m.string).toList());
             return strings;
         }
