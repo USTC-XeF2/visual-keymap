@@ -9,6 +9,12 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class KeyLayoutHelper {
+
+    private static final double SPACING = 0.25;
+    private static final double MAIN_ROW_OFF = 1.0 + SPACING;
+    private static final double UTIL_COL_OFF = 15.0 + SPACING;
+    private static final double NUMPAD_COL_OFF = UTIL_COL_OFF + 3.0 + SPACING;
+
     public static KeyboardLayout getLayout(boolean isFull) {
         List<KeyLayout> keys = new ArrayList<>();
 
@@ -26,93 +32,95 @@ public class KeyLayoutHelper {
         keys.add(new KeyLayout("f11", 0.0, 13.0));
         keys.add(new KeyLayout("f12", 0.0, 14.0));
 
-        keys.add(new KeyLayout("grave.accent", 1.0, 0.0));
+        keys.add(new KeyLayout("grave.accent", MAIN_ROW_OFF, 0.0));
         for (int i = 1; i <= 10; i++) {
-            keys.add(new KeyLayout(i == 10 ? "0" : String.valueOf(i), 1.0, i));
+            keys.add(new KeyLayout(i == 10 ? "0" : String.valueOf(i), MAIN_ROW_OFF, i));
         }
-        keys.add(new KeyLayout("minus", 1.0, 11.0));
-        keys.add(new KeyLayout("equal", 1.0, 12.0));
-        keys.add(new KeyLayout("backspace", 1.0, 13.0, 2.0));
+        keys.add(new KeyLayout("minus", MAIN_ROW_OFF, 11.0));
+        keys.add(new KeyLayout("equal", MAIN_ROW_OFF, 12.0));
+        keys.add(new KeyLayout("backspace", MAIN_ROW_OFF, 13.0, 2.0));
 
-        keys.add(new KeyLayout("tab", 2.0, 0.0, 1.5));
+        keys.add(new KeyLayout("tab", MAIN_ROW_OFF + 1.0, 0.0, 1.5));
         String[] row2Keys = {"q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "left.bracket", "right.bracket"};
         for (int i = 0; i < row2Keys.length; i++) {
-            keys.add(new KeyLayout(row2Keys[i], 2.0, 1.5 + i));
+            keys.add(new KeyLayout(row2Keys[i], MAIN_ROW_OFF + 1.0, 1.5 + i));
         }
-        keys.add(new KeyLayout("backslash", 2.0, 13.5, 1.5));
+        keys.add(new KeyLayout("backslash", MAIN_ROW_OFF + 1.0, 13.5, 1.5));
 
-        keys.add(new KeyLayout("caps.lock", 3.0, 0.0, 1.75));
+        keys.add(new KeyLayout("caps.lock", MAIN_ROW_OFF + 2.0, 0.0, 1.75));
         String[] row3Keys = {"a", "s", "d", "f", "g", "h", "j", "k", "l", "semicolon", "apostrophe"};
         for (int i = 0; i < row3Keys.length; i++) {
-            keys.add(new KeyLayout(row3Keys[i], 3.0, 1.75 + i));
+            keys.add(new KeyLayout(row3Keys[i], MAIN_ROW_OFF + 2.0, 1.75 + i));
         }
-        keys.add(new KeyLayout("enter", 3.0, 12.75, 2.25));
+        keys.add(new KeyLayout("enter", MAIN_ROW_OFF + 2.0, 12.75, 2.25));
 
-        keys.add(new KeyLayout("left.shift", 4.0, 0.0, 2.25));
+        keys.add(new KeyLayout("left.shift", MAIN_ROW_OFF + 3.0, 0.0, 2.25));
         String[] row4Keys = {"z", "x", "c", "v", "b", "n", "m", "comma", "period", "slash"};
         for (int i = 0; i < row4Keys.length; i++) {
-            keys.add(new KeyLayout(row4Keys[i], 4.0, 2.25 + i));
+            keys.add(new KeyLayout(row4Keys[i], MAIN_ROW_OFF + 3.0, 2.25 + i));
         }
-        keys.add(new KeyLayout("right.shift", 4.0, 12.25, 2.75));
+        keys.add(new KeyLayout("right.shift", MAIN_ROW_OFF + 3.0, 12.25, 2.75));
 
-        keys.add(new KeyLayout("left.control", 5.0, 0.0, 1.25));
-        keys.add(new KeyLayout("left.win", 5.0, 1.25, 1.25));
-        keys.add(new KeyLayout("left.alt", 5.0, 2.5, 1.25));
-        keys.add(new KeyLayout("space", 5.0, 3.75, 6.25));
-        keys.add(new KeyLayout("right.alt", 5.0, 10, 1.25));
-        keys.add(new KeyLayout("right.win", 5.0, 11.25, 1.25));
-        keys.add(new KeyLayout("menu", 5.0, 12.5, 1.25));
-        keys.add(new KeyLayout("right.control", 5.0, 13.75, 1.25));
+        keys.add(new KeyLayout("left.control", MAIN_ROW_OFF + 4.0, 0.0, 1.25));
+        keys.add(new KeyLayout("left.win", MAIN_ROW_OFF + 4.0, 1.25, 1.25));
+        keys.add(new KeyLayout("left.alt", MAIN_ROW_OFF + 4.0, 2.5, 1.25));
+        keys.add(new KeyLayout("space", MAIN_ROW_OFF + 4.0, 3.75, 6.25));
+        keys.add(new KeyLayout("right.alt", MAIN_ROW_OFF + 4.0, 10, 1.25));
+        keys.add(new KeyLayout("right.win", MAIN_ROW_OFF + 4.0, 11.25, 1.25));
+        keys.add(new KeyLayout("menu", MAIN_ROW_OFF + 4.0, 12.5, 1.25));
+        keys.add(new KeyLayout("right.control", MAIN_ROW_OFF + 4.0, 13.75, 1.25));
 
-        keys.add(new KeyLayout("print.screen", 0.0, 15.0));
-        keys.add(new KeyLayout("scroll.lock", 0.0, 16.0));
-        keys.add(new KeyLayout("pause", 0.0, 17.0));
+        keys.add(new KeyLayout("print.screen", 0.0, UTIL_COL_OFF));
+        keys.add(new KeyLayout("scroll.lock", 0.0, UTIL_COL_OFF + 1.0));
+        keys.add(new KeyLayout("pause", 0.0, UTIL_COL_OFF + 2.0));
 
-        keys.add(new KeyLayout("insert", 1.0, 15.0));
-        keys.add(new KeyLayout("home", 1.0, 16.0));
-        keys.add(new KeyLayout("page.up", 1.0, 17.0));
-        keys.add(new KeyLayout("delete", 2.0, 15.0));
-        keys.add(new KeyLayout("end", 2.0, 16.0));
-        keys.add(new KeyLayout("page.down", 2.0, 17.0));
+        keys.add(new KeyLayout("insert", MAIN_ROW_OFF, UTIL_COL_OFF));
+        keys.add(new KeyLayout("home", MAIN_ROW_OFF, UTIL_COL_OFF + 1.0));
+        keys.add(new KeyLayout("page.up", MAIN_ROW_OFF, UTIL_COL_OFF + 2.0));
+        keys.add(new KeyLayout("delete", MAIN_ROW_OFF + 1.0, UTIL_COL_OFF));
+        keys.add(new KeyLayout("end", MAIN_ROW_OFF + 1.0, UTIL_COL_OFF + 1.0));
+        keys.add(new KeyLayout("page.down", MAIN_ROW_OFF + 1.0, UTIL_COL_OFF + 2.0));
 
-        keys.add(new KeyLayout("mouse.left", 3.0, 15.0));
-        keys.add(new KeyLayout("mouse.middle", 3.0, 16.0));
-        keys.add(new KeyLayout("mouse.right", 3.0, 17.0));
-        keys.add(new KeyLayout("mouse.4", 4.0, 15.0));
-        keys.add(new KeyLayout("mouse.5", 4.0, 17.0));
+        keys.add(new KeyLayout("mouse.left", MAIN_ROW_OFF + 2.0, UTIL_COL_OFF));
+        keys.add(new KeyLayout("mouse.middle", MAIN_ROW_OFF + 2.0, UTIL_COL_OFF + 1.0));
+        keys.add(new KeyLayout("mouse.right", MAIN_ROW_OFF + 2.0, UTIL_COL_OFF + 2.0));
+        keys.add(new KeyLayout("mouse.4", MAIN_ROW_OFF + 3.0, UTIL_COL_OFF));
+        keys.add(new KeyLayout("mouse.5", MAIN_ROW_OFF + 3.0, UTIL_COL_OFF + 2.0));
 
-        keys.add(new KeyLayout("up", 4.0, 16.0));
-        keys.add(new KeyLayout("left", 5.0, 15.0));
-        keys.add(new KeyLayout("down", 5.0, 16.0));
-        keys.add(new KeyLayout("right", 5.0, 17.0));
+        keys.add(new KeyLayout("up", MAIN_ROW_OFF + 3.0, UTIL_COL_OFF + 1.0));
+        keys.add(new KeyLayout("left", MAIN_ROW_OFF + 4.0, UTIL_COL_OFF));
+        keys.add(new KeyLayout("down", MAIN_ROW_OFF + 4.0, UTIL_COL_OFF + 1.0));
+        keys.add(new KeyLayout("right", MAIN_ROW_OFF + 4.0, UTIL_COL_OFF + 2.0));
+
+        double totalCols = UTIL_COL_OFF + 3.0;
 
         if (isFull) {
-            double numpadColOffset = 18.0;
+            keys.add(new KeyLayout("num.lock", MAIN_ROW_OFF, NUMPAD_COL_OFF));
+            keys.add(new KeyLayout("keypad.divide", MAIN_ROW_OFF, NUMPAD_COL_OFF + 1.0));
+            keys.add(new KeyLayout("keypad.multiply", MAIN_ROW_OFF, NUMPAD_COL_OFF + 2.0));
+            keys.add(new KeyLayout("keypad.subtract", MAIN_ROW_OFF, NUMPAD_COL_OFF + 3.0));
 
-            keys.add(new KeyLayout("num.lock", 1.0, numpadColOffset + 0.0));
-            keys.add(new KeyLayout("keypad.divide", 1.0, numpadColOffset + 1.0));
-            keys.add(new KeyLayout("keypad.multiply", 1.0, numpadColOffset + 2.0));
-            keys.add(new KeyLayout("keypad.subtract", 1.0, numpadColOffset + 3.0));
+            keys.add(new KeyLayout("keypad.7", MAIN_ROW_OFF + 1.0, NUMPAD_COL_OFF));
+            keys.add(new KeyLayout("keypad.8", MAIN_ROW_OFF + 1.0, NUMPAD_COL_OFF + 1.0));
+            keys.add(new KeyLayout("keypad.9", MAIN_ROW_OFF + 1.0, NUMPAD_COL_OFF + 2.0));
+            keys.add(new KeyLayout("keypad.add", MAIN_ROW_OFF + 1.0, NUMPAD_COL_OFF + 3.0, 1.0, 2.0));
 
-            keys.add(new KeyLayout("keypad.7", 2.0, numpadColOffset + 0.0));
-            keys.add(new KeyLayout("keypad.8", 2.0, numpadColOffset + 1.0));
-            keys.add(new KeyLayout("keypad.9", 2.0, numpadColOffset + 2.0));
-            keys.add(new KeyLayout("keypad.add", 2.0, numpadColOffset + 3.0, 1.0, 2.0)); // Height Mult 2.0 (Row 2 & 3)
+            keys.add(new KeyLayout("keypad.4", MAIN_ROW_OFF + 2.0, NUMPAD_COL_OFF));
+            keys.add(new KeyLayout("keypad.5", MAIN_ROW_OFF + 2.0, NUMPAD_COL_OFF + 1.0));
+            keys.add(new KeyLayout("keypad.6", MAIN_ROW_OFF + 2.0, NUMPAD_COL_OFF + 2.0));
 
-            keys.add(new KeyLayout("keypad.4", 3.0, numpadColOffset + 0.0));
-            keys.add(new KeyLayout("keypad.5", 3.0, numpadColOffset + 1.0));
-            keys.add(new KeyLayout("keypad.6", 3.0, numpadColOffset + 2.0));
+            keys.add(new KeyLayout("keypad.1", MAIN_ROW_OFF + 3.0, NUMPAD_COL_OFF));
+            keys.add(new KeyLayout("keypad.2", MAIN_ROW_OFF + 3.0, NUMPAD_COL_OFF + 1.0));
+            keys.add(new KeyLayout("keypad.3", MAIN_ROW_OFF + 3.0, NUMPAD_COL_OFF + 2.0));
+            keys.add(new KeyLayout("keypad.enter", MAIN_ROW_OFF + 3.0, NUMPAD_COL_OFF + 3.0, 1.0, 2.0));
 
-            keys.add(new KeyLayout("keypad.1", 4.0, numpadColOffset + 0.0));
-            keys.add(new KeyLayout("keypad.2", 4.0, numpadColOffset + 1.0));
-            keys.add(new KeyLayout("keypad.3", 4.0, numpadColOffset + 2.0));
-            keys.add(new KeyLayout("keypad.enter", 4.0, numpadColOffset + 3.0, 1.0, 2.0)); // Height Mult 2.0 (Row 4 & 5)
+            keys.add(new KeyLayout("keypad.0", MAIN_ROW_OFF + 4.0, NUMPAD_COL_OFF, 2.0));
+            keys.add(new KeyLayout("keypad.decimal", MAIN_ROW_OFF + 4.0, NUMPAD_COL_OFF + 2.0));
 
-            keys.add(new KeyLayout("keypad.0", 5.0, numpadColOffset + 0.0, 2.0)); // Width Mult 2.0
-            keys.add(new KeyLayout("keypad.decimal", 5.0, numpadColOffset + 2.0));
+            totalCols = NUMPAD_COL_OFF + 4.0;
         }
 
-        return new KeyboardLayout(keys, 6.0, isFull ? 22.0 : 18.0);
+        return new KeyboardLayout(keys, MAIN_ROW_OFF + 5.0, totalCols);
     }
 
     @Environment(EnvType.CLIENT)
