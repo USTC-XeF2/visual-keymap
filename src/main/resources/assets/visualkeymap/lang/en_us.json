@@ -10,6 +10,9 @@
     "visualkeymap.gui.option.show_numpad": "Show Numpad",
     "visualkeymap.gui.option.prioritize_conflicting_keybinds": "Prioritize Conflicting Keybinds",
 
+    "key.category.visualkeymap.visualkeymap": "Visual Keymap",
+    "visualkeymap.key.open_keymap": "Open Visual Keymap",
+
     "visualkeymap.key.left.alt": "Alt",
     "visualkeymap.key.left.control": "Ctrl",
     "visualkeymap.key.left.shift": "Shift",
