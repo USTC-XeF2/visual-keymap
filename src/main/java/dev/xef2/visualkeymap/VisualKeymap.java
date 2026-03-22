@@ -3,12 +3,18 @@ package dev.xef2.visualkeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.api.MinecraftImpl;
 import dev.xef2.visualkeymap.api.VisualKeymapApi;
+import dev.xef2.visualkeymap.gui.screen.VisualKeymapScreen;
 import dev.xef2.visualkeymap.integration.CommandKeysIntegration;
 import dev.xef2.visualkeymap.integration.MaLiLibIntegration;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +45,21 @@ public class VisualKeymap implements ClientModInitializer {
         if (loader.isModLoaded("commandkeys")) {
             apiImpl.add(new CommandKeysIntegration());
         }
+
+        KeyMapping.Category category = KeyMapping.Category.register(
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, MOD_ID)
+        );
+        KeyMapping keyBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+                getTranslationKey("key.open_keymap"),
+                GLFW.GLFW_KEY_UNKNOWN,
+                category
+        ));
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (keyBinding.consumeClick()) {
+                client.setScreen(new VisualKeymapScreen(client.screen, client.options));
+            }
+        });
 
         ModConfig.load();
     }

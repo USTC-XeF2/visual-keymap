@@ -10,6 +10,9 @@
     "visualkeymap.gui.option.show_numpad": "显示小键盘",
     "visualkeymap.gui.option.prioritize_conflicting_keybinds": "置顶冲突的按键绑定",
 
+    "key.category.visualkeymap.visualkeymap": "可视化键位图",
+    "visualkeymap.key.open_keymap": "打开可视化键位图",
+
     "visualkeymap.key.left.alt": "Alt",
     "visualkeymap.key.left.control": "Ctrl",
     "visualkeymap.key.left.shift": "Shift",
