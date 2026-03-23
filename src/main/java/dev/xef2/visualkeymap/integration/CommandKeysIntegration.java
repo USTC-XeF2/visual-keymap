@@ -45,12 +45,20 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
         ) {
             super(
                     Component.translatable("key.category.commandkeys.main"),
-                    Component.translatable("option.commandkeys.profile", profile.name),
+                    getName(profile, macro),
                     2
             );
             this.profile = profile;
             this.macro = macro;
             this.keybind = keybind;
+        }
+
+        private static Component getName(Profile profile, Macro macro) {
+            MutableComponent name = Component.translatable("option.commandkeys.profile", profile.name);
+            if (!macro.name.isEmpty()) {
+                name.append(" - ").append(macro.name);
+            }
+            return name;
         }
 
         @Override
