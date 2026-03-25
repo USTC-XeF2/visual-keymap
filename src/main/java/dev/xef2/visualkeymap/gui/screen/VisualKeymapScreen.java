@@ -1,9 +1,9 @@
 package dev.xef2.visualkeymap.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
-import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.gui.widget.KeybindsListWidget;
 import dev.xef2.visualkeymap.gui.widget.KeyboardWidget;
 import dev.xef2.visualkeymap.mixin.HeaderAndFooterLayoutAccessor;
