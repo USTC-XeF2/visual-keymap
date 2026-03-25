@@ -1,15 +1,15 @@
 package dev.xef2.visualkeymap.gui.widget;
 
+import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
-import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.gui.screen.VisualKeymapScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.StringWidget;
@@ -103,13 +103,13 @@ public class KeybindsListWidget extends ContainerObjectSelectionList<KeybindsLis
                     font
             );
             this.nameWidget.setTooltip(Tooltip.create(binding.getTooltip()));
-            this.editButton = Button.builder(binding.getBoundKeysLocalizedText(), (button) -> {
+            this.editButton = Button.builder(binding.getBoundKeysLocalizedText(), (_) -> {
                         sharedData.selectedKeyBinding = binding;
                         updateAllEntries();
                     })
                     .bounds(0, 0, 100, ROW_HEIGHT)
                     .build();
-            this.resetButton = Button.builder(RESET_TEXT, (button) -> {
+            this.resetButton = Button.builder(RESET_TEXT, (_) -> {
                         resetCallback.accept(binding);
                         updateAllEntries();
                     })
@@ -118,21 +118,21 @@ public class KeybindsListWidget extends ContainerObjectSelectionList<KeybindsLis
         }
 
         @Override
-        public void renderContent(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float f) {
+        public void extractContent(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float f) {
             int y = this.getContentY() - 2;
 
             int resetX = KeybindsListWidget.this.scrollBarX() - this.resetButton.getWidth() - 10;
             this.resetButton.setPosition(resetX, y);
-            this.resetButton.render(guiGraphics, mouseX, mouseY, f);
+            this.resetButton.extractRenderState(graphics, mouseX, mouseY, f);
 
             int editX = resetX - 5 - this.editButton.getWidth();
             this.editButton.setPosition(editX, y);
-            this.editButton.render(guiGraphics, mouseX, mouseY, f);
+            this.editButton.extractRenderState(graphics, mouseX, mouseY, f);
 
             int textX = this.getContentX();
             this.nameWidget.setPosition(textX, y);
             this.nameWidget.setMaxWidth(editX - textX - 5);
-            this.nameWidget.render(guiGraphics, mouseX, mouseY, f);
+            this.nameWidget.extractRenderState(graphics, mouseX, mouseY, f);
         }
 
         @Override

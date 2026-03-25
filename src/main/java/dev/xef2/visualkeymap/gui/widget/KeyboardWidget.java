@@ -7,7 +7,7 @@ import dev.xef2.visualkeymap.gui.screen.VisualKeymapScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.AbstractLayout;
@@ -178,7 +178,7 @@ public class KeyboardWidget extends AbstractLayout {
         }
 
         @Override
-        protected void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float f) {
+        protected void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
             int borderColor;
             if (sharedData.selectedKeyCode != null && sharedData.selectedKeyCode == this.key.getValue()) {
                 borderColor = CommonColors.WHITE;
@@ -189,7 +189,7 @@ public class KeyboardWidget extends AbstractLayout {
                 borderColor = CommonColors.BLACK;
             }
 
-            guiGraphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), borderColor);
+            graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), borderColor);
 
             int color;
             int bindCount = this.bindings.size();
@@ -207,9 +207,11 @@ public class KeyboardWidget extends AbstractLayout {
             int innerY = getY() + BORDER_THICKNESS;
             int innerWidth = getWidth() - BORDER_THICKNESS * 2;
             int innerHeight = getHeight() - BORDER_THICKNESS * 2;
-            guiGraphics.fill(innerX, innerY, innerX + innerWidth, innerY + innerHeight, color);
+            graphics.fill(innerX, innerY, innerX + innerWidth, innerY + innerHeight, color);
 
-            this.renderDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+            this.extractDefaultLabel(graphics.textRendererForWidget(
+                    this, GuiGraphicsExtractor.HoveredTextEffects.NONE
+            ));
         }
     }
 }

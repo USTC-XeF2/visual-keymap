@@ -72,7 +72,7 @@ public abstract class KeyBinding {
 
         for (KeyBinding binding : bindings) {
             ConflictKey key = new ConflictKey(binding.getFullKeyCodes(), binding.getOrder());
-            conflictMap.computeIfAbsent(key, k -> new ArrayList<>()).add(binding);
+            conflictMap.computeIfAbsent(key, _ -> new ArrayList<>()).add(binding);
         }
 
         return conflictMap.values().stream()

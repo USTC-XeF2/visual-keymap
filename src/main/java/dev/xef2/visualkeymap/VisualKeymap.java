@@ -8,7 +8,7 @@ import dev.xef2.visualkeymap.integration.CommandKeysIntegration;
 import dev.xef2.visualkeymap.integration.MaLiLibIntegration;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
@@ -49,7 +49,7 @@ public class VisualKeymap implements ClientModInitializer {
         KeyMapping.Category category = KeyMapping.Category.register(
                 Identifier.fromNamespaceAndPath(MOD_ID, MOD_ID)
         );
-        KeyMapping keyBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        KeyMapping keyBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 getTranslationKey("key.open_keymap"),
                 GLFW.GLFW_KEY_UNKNOWN,
                 category

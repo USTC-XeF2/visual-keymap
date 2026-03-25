@@ -1,9 +1,9 @@
 package dev.xef2.visualkeymap.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
-import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.gui.widget.KeybindsListWidget;
 import dev.xef2.visualkeymap.gui.widget.KeyboardWidget;
 import dev.xef2.visualkeymap.mixin.HeaderAndFooterLayoutAccessor;
@@ -81,10 +81,10 @@ public class VisualKeymapScreen extends OptionsSubScreen {
     protected void addFooter() {
         LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
         footer.addChild(Button.builder(VisualKeymap.getTranslatedComponent("gui.open_config"),
-                button -> this.minecraft.setScreen(
+                _ -> this.minecraft.setScreen(
                         new ConfigScreen(new VisualKeymapScreen(this.lastScreen, this.options), this.options))
         ).build());
-        footer.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).build());
+        footer.addChild(Button.builder(CommonComponents.GUI_DONE, _ -> this.onClose()).build());
     }
 
     private List<? extends KeyBinding> getUnboundBindings() {
