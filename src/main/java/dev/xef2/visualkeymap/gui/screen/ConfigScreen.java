@@ -1,7 +1,7 @@
 package dev.xef2.visualkeymap.gui.screen;
 
-import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.ModConfig;
+import dev.xef2.visualkeymap.VisualKeymap;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;

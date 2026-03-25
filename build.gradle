@@ -17,6 +17,7 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
     maven { url = "https://jitpack.io" }
+    maven {url = "https://masa.dy.fi/maven/sakura-ryoko" }
     maven { url = "https://maven.terraformersmc.com/releases/" }
     maven {url = "https://maven.fallenbreath.me/releases" }
     maven { url = "https://api.modrinth.com/maven" }
@@ -30,11 +31,11 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modCompileOnly "com.github.sakura-ryoko:malilib:${project.malilib_version}"
+    modCompileOnly "fi.dy.masa.malilib:malilib-fabric-${project.malilib_version}"
     modCompileOnly "maven.modrinth:commandkeys:${project.commandkeys_version}"
     modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
-    modRuntimeOnly "com.github.sakura-ryoko:malilib:${project.malilib_version}"
+    modRuntimeOnly "fi.dy.masa.malilib:malilib-fabric-${project.malilib_version}"
     modRuntimeOnly "maven.modrinth:commandkeys:${project.commandkeys_version}"
     modRuntimeOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 }

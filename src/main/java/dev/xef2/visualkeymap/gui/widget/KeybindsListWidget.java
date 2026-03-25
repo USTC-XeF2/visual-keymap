@@ -1,8 +1,8 @@
 package dev.xef2.visualkeymap.gui.widget;
 
+import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
-import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.gui.screen.VisualKeymapScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
