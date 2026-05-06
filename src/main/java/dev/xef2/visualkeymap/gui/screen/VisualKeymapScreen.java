@@ -1,6 +1,7 @@
 package dev.xef2.visualkeymap.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.xef2.visualkeymap.KeymapSnapshot;
 import dev.xef2.visualkeymap.ModConfig;
 import dev.xef2.visualkeymap.VisualKeymap;
 import dev.xef2.visualkeymap.api.KeyBinding;
@@ -9,6 +10,7 @@ import dev.xef2.visualkeymap.gui.widget.KeyboardWidget;
 import dev.xef2.visualkeymap.mixin.HeaderAndFooterLayoutAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -22,7 +24,12 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,18 +86,80 @@ public class VisualKeymapScreen extends OptionsSubScreen {
 
     @Override
     protected void addFooter() {
-        LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
+        LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(4));
+        footer.addChild(Button.builder(VisualKeymap.getTranslatedComponent("gui.export"),
+                _ -> this.doExport()
+        ).width(75).build());
+        footer.addChild(Button.builder(VisualKeymap.getTranslatedComponent("gui.import"),
+                _ -> this.doImport()
+        ).width(75).build());
         footer.addChild(Button.builder(VisualKeymap.getTranslatedComponent("gui.open_config"),
                 _ -> this.minecraft.setScreen(
                         new ConfigScreen(new VisualKeymapScreen(this.lastScreen, this.options), this.options))
-        ).build());
-        footer.addChild(Button.builder(CommonComponents.GUI_DONE, _ -> this.onClose()).build());
+        ).width(75).build());
+        footer.addChild(Button.builder(CommonComponents.GUI_DONE, _ -> this.onClose()).width(75).build());
+    }
+
+    private void doExport() {
+        String path;
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            PointerBuffer filters = stack.mallocPointer(1);
+            filters.put(stack.UTF8("*.json"));
+            filters.flip();
+            path = TinyFileDialogs.tinyfd_saveFileDialog(
+                    VisualKeymap.getTranslatedComponent("gui.export_dialog").getString(),
+                    new File(FabricLoader.getInstance().getConfigDir().toFile(), "visualkeymap-export.json").getAbsolutePath(),
+                    filters,
+                    null
+            );
+        }
+        if (path != null) {
+            try {
+                VisualKeymap.exportKeyBindings(new File(path));
+            } catch (IOException ignored) {
+            }
+        }
+    }
+
+    private void doImport() {
+        String path;
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            PointerBuffer filters = stack.mallocPointer(1);
+            filters.put(stack.UTF8("*.json"));
+            filters.flip();
+            path = TinyFileDialogs.tinyfd_openFileDialog(
+                    VisualKeymap.getTranslatedComponent("gui.import_dialog").getString(),
+                    "",
+                    filters,
+                    null,
+                    false
+            );
+        }
+        if (path != null) {
+            try {
+                KeymapSnapshot snapshot = VisualKeymap.importKeyBindings(new File(path));
+                List<KeymapSnapshot.ImportMatch> matches = snapshot.matchBindings(VisualKeymap.getApiImplementations())
+                        .stream()
+                        .filter(m -> !m.binding.getKeyCodes().equals(m.entry.keys()))
+                        .toList();
+                if (!matches.isEmpty()) {
+                    this.minecraft.setScreen(new ImportPreviewScreen(this, matches));
+                }
+            } catch (IOException ignored) {
+            }
+        }
     }
 
     private List<? extends KeyBinding> getUnboundBindings() {
         return this.keyBindings.stream()
                 .filter(binding -> binding.getKeyCodes().isEmpty())
                 .toList();
+    }
+
+    protected void refreshKeyBindings() {
+        this.keyBindings = VisualKeymap.getKeyBindings();
+        this.keybindsListWidget.setKeyBindings(this.getUnboundBindings());
+        this.keyboardWidget.updateKeyBindings();
     }
 
     private List<? extends KeyBinding> getBindingsForKey(InputConstants.Key key) {

@@ -53,6 +53,11 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
             this.keybind = keybind;
         }
 
+        @Override
+        public String getId() {
+            return this.profile.name + ":" + this.macro.name;
+        }
+
         private static Component getName(Profile profile, Macro macro) {
             MutableComponent name = Component.translatable("option.commandkeys.profile", profile.name);
             if (!macro.name.isEmpty()) {
@@ -109,11 +114,12 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
 
         @Override
         public boolean isDefault() {
-            return true;
+            return this.getKeyCodes().isEmpty();
         }
 
         @Override
         public void resetToDefault() {
+            this.setBoundKeys(List.of());
         }
     }
 }
