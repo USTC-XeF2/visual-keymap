@@ -10,4 +10,8 @@ public interface VisualKeymapApi<T extends KeyBinding> {
     List<T> getKeyBindings();
 
     void save();
+
+    default String getProviderName() {
+        return "";
+    }
 }

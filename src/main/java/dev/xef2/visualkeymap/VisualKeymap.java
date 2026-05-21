@@ -16,6 +16,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,8 +70,20 @@ public class VisualKeymap implements ClientModInitializer {
         return apiImpl.stream().flatMap(api -> api.getKeyBindings().stream()).toList();
     }
 
+    public static List<VisualKeymapApi<?>> getApiImplementations() {
+        return apiImpl;
+    }
+
     public static void saveKeyBindings() {
         apiImpl.forEach(VisualKeymapApi::save);
+    }
+
+    public static void exportKeyBindings(File file) throws IOException {
+        KeymapSnapshot.fromBindings(apiImpl).writeToFile(file);
+    }
+
+    public static KeymapSnapshot importKeyBindings(File file) throws IOException {
+        return KeymapSnapshot.readFromFile(file);
     }
 
     public static String getTranslationKey(String key) {
