@@ -33,6 +33,11 @@ public class MaLiLibIntegration implements VisualKeymapApi<MaLiLibIntegration.Ma
         InputEventHandler.getKeybindManager().updateUsedKeys();
     }
 
+    @Override
+    public String getProviderName() {
+        return "malilib";
+    }
+
     public static class MaLiLibKeyBinding extends KeyBinding {
 
         private final IHotkey hotkey;
@@ -40,6 +45,11 @@ public class MaLiLibIntegration implements VisualKeymapApi<MaLiLibIntegration.Ma
         public MaLiLibKeyBinding(KeybindCategory category, IHotkey hotkey) {
             super(Component.literal(category.getModName()), Component.literal(hotkey.getConfigGuiDisplayName()), 4);
             this.hotkey = hotkey;
+        }
+
+        @Override
+        public String getId() {
+            return this.hotkey.getName();
         }
 
         @Override

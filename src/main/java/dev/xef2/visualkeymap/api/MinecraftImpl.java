@@ -24,6 +24,11 @@ public class MinecraftImpl implements VisualKeymapApi<MinecraftImpl.MinecraftKey
         // Minecraft handles keybinding saving automatically.
     }
 
+    @Override
+    public String getProviderName() {
+        return "minecraft";
+    }
+
     public static class MinecraftKeyBinding extends KeyBinding {
 
         private final KeyMapping keyMapping;
@@ -31,6 +36,11 @@ public class MinecraftImpl implements VisualKeymapApi<MinecraftImpl.MinecraftKey
         public MinecraftKeyBinding(KeyMapping keyMapping) {
             super(keyMapping.getCategory().label(), Component.translatable(keyMapping.getName()), 1);
             this.keyMapping = keyMapping;
+        }
+
+        @Override
+        public String getId() {
+            return this.keyMapping.getName();
         }
 
         @Override

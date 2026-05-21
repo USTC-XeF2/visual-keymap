@@ -25,6 +25,8 @@ public abstract class KeyBinding {
         this.maxBoundKeys = maxBoundKeys;
     }
 
+    abstract public String getId();
+
     public MutableComponent getDisplayName() {
         return this.category.copy().append(" - ").append(this.name);
     }
