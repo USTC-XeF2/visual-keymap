@@ -59,7 +59,7 @@ public class VisualKeymap implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (keyBinding.consumeClick()) {
-                client.setScreen(new VisualKeymapScreen(client.screen, client.options));
+                client.setScreenAndShow(new VisualKeymapScreen(client.gui.screen(), client.options));
             }
         });
 

@@ -62,7 +62,7 @@ public class ImportPreviewScreen extends OptionsSubScreen {
                     if (this.lastScreen instanceof VisualKeymapScreen vks) {
                         vks.refreshKeyBindings();
                     }
-                    this.minecraft.setScreen(this.lastScreen);
+                    this.minecraft.setScreenAndShow(this.lastScreen);
                 }
         ).build());
         footer.addChild(Button.builder(CommonComponents.GUI_CANCEL, _ -> this.onClose()).build());
@@ -76,7 +76,7 @@ public class ImportPreviewScreen extends OptionsSubScreen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.lastScreen);
+        this.minecraft.setScreenAndShow(this.lastScreen);
     }
 
     private class ImportListWidget extends ContainerObjectSelectionList<ImportListWidget.ImportEntry> {

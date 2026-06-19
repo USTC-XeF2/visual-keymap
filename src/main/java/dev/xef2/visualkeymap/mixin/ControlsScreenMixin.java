@@ -30,13 +30,13 @@ public class ControlsScreenMixin {
     )
     private void addKeymapOptionAndRedirect(
             OptionsList instance,
-            OptionInstance<?>[] originalOptions
+            OptionInstance<?>[] options
     ) {
         Minecraft minecraft = Minecraft.getInstance();
 
         Button viewVisualButton = Button.builder(
                 VisualKeymap.getTranslatedComponent("gui.open_keymap"),
-                (button) -> minecraft.setScreen(new VisualKeymapScreen(
+                (_) -> minecraft.setScreenAndShow(new VisualKeymapScreen(
                         (ControlsScreen) (Object) this,
                         minecraft.options
                 ))
@@ -44,7 +44,7 @@ public class ControlsScreenMixin {
 
         List<AbstractWidget> widgets = new ArrayList<>(List.of(viewVisualButton));
 
-        for (OptionInstance<?> option : originalOptions) {
+        for (OptionInstance<?> option : options) {
             widgets.add(option.createButton(minecraft.options));
         }
 

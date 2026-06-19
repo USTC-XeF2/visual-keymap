@@ -94,7 +94,7 @@ public class VisualKeymapScreen extends OptionsSubScreen {
                 _ -> this.doImport()
         ).width(75).build());
         footer.addChild(Button.builder(VisualKeymap.getTranslatedComponent("gui.open_config"),
-                _ -> this.minecraft.setScreen(
+                _ -> this.minecraft.setScreenAndShow(
                         new ConfigScreen(new VisualKeymapScreen(this.lastScreen, this.options), this.options))
         ).width(75).build());
         footer.addChild(Button.builder(CommonComponents.GUI_DONE, _ -> this.onClose()).width(75).build());
@@ -143,7 +143,7 @@ public class VisualKeymapScreen extends OptionsSubScreen {
                         .filter(m -> !m.binding.getKeyCodes().equals(m.entry.keys()))
                         .toList();
                 if (!matches.isEmpty()) {
-                    this.minecraft.setScreen(new ImportPreviewScreen(this, matches));
+                    this.minecraft.setScreenAndShow(new ImportPreviewScreen(this, matches));
                 }
             } catch (IOException ignored) {
             }

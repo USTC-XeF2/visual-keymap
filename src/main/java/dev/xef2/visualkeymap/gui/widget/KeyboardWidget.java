@@ -14,7 +14,7 @@ import net.minecraft.client.gui.layouts.AbstractLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.CommonColors;
@@ -59,7 +59,7 @@ public class KeyboardWidget extends AbstractLayout {
         for (KeyLayoutHelper.KeyLayout keyLayout : this.keyboardLayout.keys()) {
             String translationKey = VisualKeymap.getTranslationKey("key." + keyLayout.translationKey());
             InputConstants.Key key = keyLayout.getKey();
-            Component text = I18n.exists(translationKey) ?
+            Component text = Language.getInstance().has(translationKey) ?
                     Component.translatable(translationKey) :
                     key.getDisplayName();
             this.keyWidgetMap.put(keyLayout, new KeyWidget(key, text));
@@ -114,6 +114,10 @@ public class KeyboardWidget extends AbstractLayout {
 
             this.keyWidgetMap.get(keyLayout).setRectangle(width, height, x, y);
         }
+    }
+
+    @Override
+    public void removeChildren() {
     }
 
     @Environment(EnvType.CLIENT)
