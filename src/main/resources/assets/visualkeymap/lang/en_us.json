@@ -16,6 +16,10 @@
     "visualkeymap.gui.config_title": "Visual Keymap Options",
     "visualkeymap.gui.option.show_numpad": "Show Numpad",
     "visualkeymap.gui.option.prioritize_conflicting_keybinds": "Prioritize Conflicting Keybinds",
+    "visualkeymap.gui.option.sort_mode": "Sort Mode",
+    "visualkeymap.gui.option.sort_mode.default": "Default",
+    "visualkeymap.gui.option.sort_mode.bound_key": "Bound Key",
+    "visualkeymap.gui.option.sort_mode.display_name": "Display Name",
 
     "key.category.visualkeymap.visualkeymap": "Visual Keymap",
     "visualkeymap.key.open_keymap": "Open Visual Keymap",

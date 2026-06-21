@@ -54,14 +54,9 @@ public class KeybindsListWidget extends ContainerObjectSelectionList<KeybindsLis
 
     public void createEntries() {
         List<List<KeyBinding>> conflictKeyBindings = KeyBinding.getConflictBindings(this.keyBindings);
-        Comparator<KeyBinding> keyBindingComparator = Comparator
-                .<KeyBinding>comparingInt(binding -> binding.containsSearchText(sharedData.searchText)
-                        ? -1 : 0)
-                .thenComparingInt(binding -> ModConfig.getInstance().prioritizeConflictingKeybinds
-                        && conflictKeyBindings.stream().anyMatch(list -> list.contains(binding))
-                        ? -1 : 0);
+
         List<? extends KeyBinding> sortedKeyBindings = this.keyBindings.stream()
-                .sorted(keyBindingComparator)
+                .sorted(getComparator(conflictKeyBindings))
                 .toList();
 
         this.clearEntries();
@@ -71,6 +66,48 @@ public class KeybindsListWidget extends ContainerObjectSelectionList<KeybindsLis
         this.setScrollAmount(0.0);
 
         this.updateAllEntries();
+    }
+
+    private Comparator<KeyBinding> getComparator(List<List<KeyBinding>> conflictKeyBindings) {
+        ModConfig modConfig = ModConfig.getInstance();
+
+        Comparator<KeyBinding> comparator = Comparator.comparingInt(
+                binding -> binding.containsSearchText(this.sharedData.searchText) ? 0 : 1
+        );
+
+        if (modConfig.prioritizeConflictingKeybinds) {
+            comparator = comparator.thenComparingInt(
+                    binding -> conflictKeyBindings.stream().anyMatch(list -> list.contains(binding)) ? 0 : 1
+            );
+        }
+
+        comparator = switch (modConfig.sortMode) {
+            case BOUND_KEY -> comparator.thenComparing(KeybindsListWidget::compareBoundKeys);
+            case DISPLAY_NAME ->
+                    comparator.thenComparing(binding -> binding.getDisplayName().getString(), String.CASE_INSENSITIVE_ORDER);
+            case DEFAULT -> comparator;
+        };
+
+        return comparator;
+    }
+
+    private static int compareBoundKeys(KeyBinding first, KeyBinding second) {
+        int result = compareIntLists(first.getKeyCodes(), second.getKeyCodes());
+        if (result != 0) {
+            return result;
+        }
+        return compareIntLists(first.getModifierKeyCodes(), second.getModifierKeyCodes());
+    }
+
+    private static int compareIntLists(List<Integer> first, List<Integer> second) {
+        int minSize = Math.min(first.size(), second.size());
+        for (int i = 0; i < minSize; i++) {
+            int result = Integer.compare(first.get(i), second.get(i));
+            if (result != 0) {
+                return result;
+            }
+        }
+        return Integer.compare(first.size(), second.size());
     }
 
     @Override
