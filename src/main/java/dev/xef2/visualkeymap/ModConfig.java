@@ -3,6 +3,8 @@ package dev.xef2.visualkeymap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.util.StringRepresentable;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,7 @@ public class ModConfig {
 
     public boolean showNumpad = true;
     public boolean prioritizeConflictingKeybinds = true;
+    public SortMode sortMode = SortMode.DEFAULT;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModConfig.class);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -56,6 +59,27 @@ public class ModConfig {
             GSON.toJson(this, writer);
         } catch (IOException e) {
             LOGGER.error("Failed to save config file.", e);
+        }
+    }
+
+    public enum SortMode implements StringRepresentable {
+        DEFAULT("default"),
+        BOUND_KEY("bound_key"),
+        DISPLAY_NAME("display_name");
+
+        private final String translationKey;
+
+        SortMode(String translationKey) {
+            this.translationKey = translationKey;
+        }
+
+        public String getTranslationKey() {
+            return "gui.option.sort_mode." + this.translationKey;
+        }
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return this.translationKey;
         }
     }
 }

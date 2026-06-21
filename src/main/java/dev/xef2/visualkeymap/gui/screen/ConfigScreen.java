@@ -6,6 +6,10 @@ import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.StringRepresentable;
+
+import java.util.Arrays;
 
 public class ConfigScreen extends OptionsSubScreen {
     public ConfigScreen(Screen screen, Options options) {
@@ -24,6 +28,17 @@ public class ConfigScreen extends OptionsSubScreen {
                         VisualKeymap.getTranslationKey("gui.option.prioritize_conflicting_keybinds"),
                         modConfig.prioritizeConflictingKeybinds,
                         (value) -> modConfig.prioritizeConflictingKeybinds = value
+                ),
+                new OptionInstance<>(
+                        VisualKeymap.getTranslationKey("gui.option.sort_mode"),
+                        OptionInstance.noTooltip(),
+                        (_, value) -> Component.translatable(VisualKeymap.getTranslationKey(value.getTranslationKey())),
+                        new OptionInstance.Enum<>(
+                                Arrays.asList(ModConfig.SortMode.values()),
+                                StringRepresentable.fromEnum(ModConfig.SortMode::values)
+                        ),
+                        modConfig.sortMode,
+                        (value) -> modConfig.sortMode = value
                 )
         };
     }

@@ -16,6 +16,10 @@
     "visualkeymap.gui.config_title": "可视化键位图选项",
     "visualkeymap.gui.option.show_numpad": "显示小键盘",
     "visualkeymap.gui.option.prioritize_conflicting_keybinds": "置顶冲突的按键绑定",
+    "visualkeymap.gui.option.sort_mode": "排序方式",
+    "visualkeymap.gui.option.sort_mode.default": "默认",
+    "visualkeymap.gui.option.sort_mode.bound_key": "按键",
+    "visualkeymap.gui.option.sort_mode.display_name": "显示名称",
 
     "key.category.visualkeymap.visualkeymap": "可视化键位图",
     "visualkeymap.key.open_keymap": "打开可视化键位图",
