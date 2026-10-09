@@ -82,10 +82,7 @@ public record KeymapSnapshot(int version, List<KeymapSnapshot.BindingEntry> bind
         }
 
         public List<InputConstants.Key> getKeysFromEntry() {
-            return entry.keys().stream().map(code -> {
-                InputConstants.Type type = code >= 0 && code <= 7 ? InputConstants.Type.MOUSE : InputConstants.Type.KEYSYM;
-                return type.getOrCreate(code);
-            }).toList();
+            return entry.keys().stream().map(KeyBinding::fromCode).toList();
         }
     }
 }

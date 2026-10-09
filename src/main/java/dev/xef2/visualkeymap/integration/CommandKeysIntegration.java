@@ -85,7 +85,7 @@ public class CommandKeysIntegration implements VisualKeymapApi<CommandKeysIntegr
         public List<Integer> getKeyCodes() {
             return Stream.of(this.keybind.getLimitKey(), this.keybind.getKey())
                     .filter(key -> !key.equals(InputConstants.UNKNOWN))
-                    .map(InputConstants.Key::getValue)
+                    .map(KeyBinding::toCode)
                     .toList();
         }
 

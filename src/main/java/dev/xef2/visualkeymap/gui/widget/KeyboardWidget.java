@@ -184,7 +184,7 @@ public class KeyboardWidget extends AbstractLayout {
         @Override
         protected void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
             int borderColor;
-            if (sharedData.selectedKeyCode != null && sharedData.selectedKeyCode == this.key.getValue()) {
+            if (sharedData.selectedKeyCode != null && sharedData.selectedKeyCode == KeyBinding.toCode(this.key)) {
                 borderColor = CommonColors.WHITE;
             } else if (this.bindings.stream().anyMatch(
                     binding -> binding.containsSearchText(sharedData.searchText))) {

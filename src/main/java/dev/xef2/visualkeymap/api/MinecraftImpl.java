@@ -47,14 +47,14 @@ public class MinecraftImpl implements VisualKeymapApi<MinecraftImpl.MinecraftKey
         @Override
         public List<Integer> getKeyCodes() {
             InputConstants.Key boundKey = ((KeyMappingAccessor) this.keyMapping).getKey();
-            return boundKey.equals(InputConstants.UNKNOWN) ? List.of() : List.of(boundKey.getValue());
+            return boundKey.equals(InputConstants.UNKNOWN) ? List.of() : List.of(KeyBinding.toCode(boundKey));
         }
 
         @Override
         public List<Integer> getModifierKeyCodes() {
             Options options = Minecraft.getInstance().options;
             if (Arrays.stream(options.debugKeys).anyMatch(binding -> binding == this.keyMapping)) {
-                return List.of(((KeyMappingAccessor) options.keyDebugModifier).getKey().getValue());
+                return List.of(KeyBinding.toCode(((KeyMappingAccessor) options.keyDebugModifier).getKey()));
             }
             return super.getModifierKeyCodes();
         }

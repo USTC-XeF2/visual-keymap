@@ -1,5 +1,6 @@
 package dev.xef2.visualkeymap;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.api.MinecraftImpl;
 import dev.xef2.visualkeymap.api.VisualKeymapApi;
@@ -14,7 +15,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class VisualKeymap implements ClientModInitializer {
         );
         KeyMapping keyBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 getTranslationKey("key.open_keymap"),
-                GLFW.GLFW_KEY_UNKNOWN,
+                InputConstants.UNKNOWN.getValue(),
                 category
         ));
 

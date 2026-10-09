@@ -82,11 +82,21 @@ public abstract class KeyBinding {
                 .toList();
     }
 
+    // Mouse button ids overlap keyboard scancodes in 26.3, so offset mouse codes to keep them unambiguous.
+    public static final int MOUSE_OFFSET = 1000;
+
+    public static int toCode(InputConstants.Key key) {
+        return key.getType() == InputConstants.Type.MOUSE ? MOUSE_OFFSET + key.getValue() : key.getValue();
+    }
+
+    public static InputConstants.Key fromCode(int code) {
+        return code >= MOUSE_OFFSET
+                ? InputConstants.Type.MOUSE.getOrCreate(code - MOUSE_OFFSET)
+                : InputConstants.Type.KEYBOARD.getOrCreate(code);
+    }
+
     private static Component getDisplayNameFromCode(int code) {
-        InputConstants.Type inputType = code >= 0 && code <= 7
-                ? InputConstants.Type.MOUSE
-                : InputConstants.Type.KEYSYM;
-        return inputType.getOrCreate(code).getDisplayName();
+        return fromCode(code).getDisplayName();
     }
 
     public Component getBoundKeysLocalizedText() {

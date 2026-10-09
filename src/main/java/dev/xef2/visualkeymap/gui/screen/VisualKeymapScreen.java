@@ -11,6 +11,7 @@ import dev.xef2.visualkeymap.mixin.HeaderAndFooterLayoutAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -24,14 +25,16 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.util.tinyfd.TinyFileDialogs;
+import org.lwjgl.sdl.SDLDialog;
+import org.lwjgl.sdl.SDL_DialogFileCallback;
+import org.lwjgl.sdl.SDL_DialogFileFilter;
+import org.lwjgl.system.MemoryUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public class VisualKeymapScreen extends OptionsSubScreen {
@@ -100,44 +103,57 @@ public class VisualKeymapScreen extends OptionsSubScreen {
         footer.addChild(Button.builder(CommonComponents.GUI_DONE, _ -> this.onClose()).width(75).build());
     }
 
-    private void doExport() {
-        String path;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            PointerBuffer filters = stack.mallocPointer(1);
-            filters.put(stack.UTF8("*.json"));
-            filters.flip();
-            path = TinyFileDialogs.tinyfd_saveFileDialog(
-                    VisualKeymap.getTranslatedComponent("gui.export_dialog").getString(),
-                    new File(FabricLoader.getInstance().getConfigDir().toFile(), "visualkeymap-export.json").getAbsolutePath(),
-                    filters,
-                    null
-            );
+    // Kept allocated for the process lifetime: SDL requires filters to stay valid until the dialog callback runs.
+    private static SDL_DialogFileFilter.Buffer jsonFilter;
+
+    private static SDL_DialogFileFilter.Buffer getJsonFilter() {
+        if (jsonFilter == null) {
+            jsonFilter = SDL_DialogFileFilter.calloc(1);
+            jsonFilter.name(MemoryUtil.memUTF8("JSON"));
+            jsonFilter.pattern(MemoryUtil.memUTF8("json"));
         }
-        if (path != null) {
+        return jsonFilter;
+    }
+
+    // SDL calls back with a NULL-terminated char** list; first entry is NULL when cancelled.
+    private static void showDialog(boolean save, String defaultLocation, Consumer<File> onPicked) {
+        long window = Minecraft.getInstance().getWindow().handle();
+        SDL_DialogFileCallback[] holder = new SDL_DialogFileCallback[1];
+        holder[0] = SDL_DialogFileCallback.create((_, fileList, _) -> {
             try {
-                VisualKeymap.exportKeyBindings(new File(path));
-            } catch (IOException ignored) {
+                if (fileList != 0L) {
+                    long first = MemoryUtil.memGetAddress(fileList);
+                    if (first != 0L) {
+                        File file = new File(MemoryUtil.memUTF8(first));
+                        Minecraft.getInstance().execute(() -> onPicked.accept(file));
+                    }
+                }
+            } finally {
+                holder[0].free();
             }
+        });
+        if (save) {
+            SDLDialog.SDL_ShowSaveFileDialog(holder[0], 0L, window, getJsonFilter(), defaultLocation);
+        } else {
+            SDLDialog.SDL_ShowOpenFileDialog(holder[0], 0L, window, getJsonFilter(), defaultLocation, false);
         }
     }
 
+    private void doExport() {
+        showDialog(true,
+                new File(FabricLoader.getInstance().getConfigDir().toFile(), "visualkeymap-export.json").getAbsolutePath(),
+                file -> {
+                    try {
+                        VisualKeymap.exportKeyBindings(file);
+                    } catch (IOException ignored) {
+                    }
+                });
+    }
+
     private void doImport() {
-        String path;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            PointerBuffer filters = stack.mallocPointer(1);
-            filters.put(stack.UTF8("*.json"));
-            filters.flip();
-            path = TinyFileDialogs.tinyfd_openFileDialog(
-                    VisualKeymap.getTranslatedComponent("gui.import_dialog").getString(),
-                    "",
-                    filters,
-                    null,
-                    false
-            );
-        }
-        if (path != null) {
+        showDialog(false, "", file -> {
             try {
-                KeymapSnapshot snapshot = VisualKeymap.importKeyBindings(new File(path));
+                KeymapSnapshot snapshot = VisualKeymap.importKeyBindings(file);
                 List<KeymapSnapshot.ImportMatch> matches = snapshot.matchBindings(VisualKeymap.getApiImplementations())
                         .stream()
                         .filter(m -> !m.binding.getKeyCodes().equals(m.entry.keys()))
@@ -147,7 +163,7 @@ public class VisualKeymapScreen extends OptionsSubScreen {
                 }
             } catch (IOException ignored) {
             }
-        }
+        });
     }
 
     private List<? extends KeyBinding> getUnboundBindings() {
@@ -164,12 +180,12 @@ public class VisualKeymapScreen extends OptionsSubScreen {
 
     private List<? extends KeyBinding> getBindingsForKey(InputConstants.Key key) {
         return this.keyBindings.stream()
-                .filter(binding -> binding.getFullKeyCodes().contains(key.getValue()))
+                .filter(binding -> binding.getFullKeyCodes().contains(KeyBinding.toCode(key)))
                 .toList();
     }
 
     private void setSelectedKey(InputConstants.Key key) {
-        int keyCode = key.getValue();
+        int keyCode = KeyBinding.toCode(key);
         if (this.sharedData.selectedKeyCode != null && this.sharedData.selectedKeyCode == keyCode) {
             this.sharedData.selectedKeyCode = null;
             this.keybindsListWidget.setKeyBindings(this.getUnboundBindings());

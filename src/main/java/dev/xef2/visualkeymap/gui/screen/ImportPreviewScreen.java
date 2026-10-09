@@ -1,6 +1,6 @@
 package dev.xef2.visualkeymap.gui.screen;
 
-import com.mojang.blaze3d.platform.InputConstants;
+import dev.xef2.visualkeymap.api.KeyBinding;
 import dev.xef2.visualkeymap.KeymapSnapshot;
 import dev.xef2.visualkeymap.VisualKeymap;
 import net.fabricmc.api.EnvType;
@@ -137,7 +137,7 @@ public class ImportPreviewScreen extends OptionsSubScreen {
                     MutableComponent text = Component.empty();
                     for (int i = 0; i < newKeyCodes.size(); i++) {
                         if (i > 0) text.append(" + ");
-                        text.append(InputConstants.Type.KEYSYM.getOrCreate(newKeyCodes.get(i)).getDisplayName());
+                        text.append(KeyBinding.fromCode(newKeyCodes.get(i)).getDisplayName());
                     }
                     newKeys = text;
                 }
